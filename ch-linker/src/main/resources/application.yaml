@@ -1,0 +1,23 @@
+com:
+  commercehub:
+    link:
+      clients:
+        shopee:
+          client-id:
+          client-secret:
+          redirect-uri: http://localhost:8082/link/callback/shopee
+          api-base-path: https://partner.test-stable.shopeemobile.com
+          api-version-path: /api/v2
+
+#          authorization-endpoint: https://partner.test-stable.shopeemobile.com/api/v2/shop/auth_partner
+#          authorization-api: /api/v2/shop/auth_partner
+#          token-endpoint: https://partner.test-stable.shopeemobile.com/api/v2/auth/token/get
+        lazada:
+          client-id:
+          client-secret:
+          redirect-uri: http://localhost:8082/link/callback/lazada
+          api-base-path: https://lazada.com
+
+#          authorization-endpoint: https://partner.test-stable.shopeemobile.com/api/v2/shop/auth_partner
+#          authorization-api: /shop/auth_partner
+#          token-endpoint: https://partner.test-stable.shopeemobile.com/api/v2/auth/token/get
