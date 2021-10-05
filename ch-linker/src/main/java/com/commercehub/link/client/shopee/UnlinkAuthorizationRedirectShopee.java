@@ -1,8 +1,7 @@
 package com.commercehub.link.client.shopee;
 
-import com.commercehub.common.ShopeeUtils;
-import com.commercehub.link.client.AuthorizationRedirect;
 import com.commercehub.link.client.LinkClientConfiguration;
+import com.commercehub.link.client.UnlinkAuthorizationRedirect;
 import com.commercehub.link.qualifier.LinkPreferred;
 import com.commercehub.link.qualifier.LinkQualifier;
 import io.vertx.core.http.Cookie;
@@ -13,18 +12,12 @@ import io.vertx.core.http.impl.CookieImpl;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.ws.rs.core.UriInfo;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 @Dependent
 @LinkQualifier("shopee")
-public class AuthorizationRedirectShopee implements AuthorizationRedirect {
-
-    private final String PARAM_PARTNER_ID = "partner_id";
-    private final String PARAM_REDIRECT = "redirect";
-    private final String PARAM_SIGN = "sign";
-    private final String PARAM_TIMESTAMP = "timestamp";
+public class UnlinkAuthorizationRedirectShopee implements UnlinkAuthorizationRedirect {
 
     @Inject
     @LinkPreferred
@@ -39,21 +32,21 @@ public class AuthorizationRedirectShopee implements AuthorizationRedirect {
     @Inject
     HttpServerResponse response;
 
-    private final String PATH_SHOP_AUTHORIZATION = "/shop/auth_partner";
+    private final String PATH_SHOP_CANCEL_AUTHORIZATION = "/shop/cancel_auth_partner";
 
     @Override
     public String redirectUri() {
         final String versionPath = configuration.apiVersionPath().isPresent() ? configuration.apiVersionPath().get() : "";
-        return configuration.apiBasePath() + versionPath + PATH_SHOP_AUTHORIZATION;
+        return configuration.apiBasePath() + versionPath + PATH_SHOP_CANCEL_AUTHORIZATION;
     }
 
     @Override
-    public Map<String,Object> param() {
+    public Map<String, Object> param() {
         final String clientId = configuration.clientId();
         final String clientSecret = configuration.clientSecret();
 
         final String targetPath = configuration.apiVersionPath().isPresent() ?
-                configuration.apiVersionPath().get() + PATH_SHOP_AUTHORIZATION : PATH_SHOP_AUTHORIZATION;
+                configuration.apiVersionPath().get() + PATH_SHOP_CANCEL_AUTHORIZATION : PATH_SHOP_CANCEL_AUTHORIZATION;
 
         final String id = UUID.randomUUID().toString(); setCookie(id);
         final String redirectUri = getRedirectUri(id);
@@ -62,7 +55,7 @@ public class AuthorizationRedirectShopee implements AuthorizationRedirect {
     }
 
     private String getRedirectUri(String id) {
-        String redirectPath = configuration.redirectPath();
+        String redirectPath = configuration.unlinkRedirectPath();
         String finalRedirectPath = redirectPath.startsWith("/") ? redirectPath.substring(1) : redirectPath;
         return uriInfo.getBaseUri().toString() + finalRedirectPath + "/" + id;
     }
@@ -74,17 +67,8 @@ public class AuthorizationRedirectShopee implements AuthorizationRedirect {
         response.addCookie(cookie);
     }
 
-    /*
-        Not require cos it can't support cross domain, for example:
-        -- localhost & 127.0.0.1
-     */
-    private String getCookieDomain() {
-        System.out.println("Request URI Host: " + uriInfo.getRequestUri().getHost());
-        return uriInfo.getRequestUri().getHost();
-    }
-
     private String getCookiePath() {
-        return configuration.redirectPath();
+        return configuration.unlinkRedirectPath();
     }
 
 }

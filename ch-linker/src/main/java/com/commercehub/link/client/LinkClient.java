@@ -10,4 +10,12 @@ public interface LinkClient {
 
     Uni<AuthorizationResponse> onCallback(MultivaluedMap<String,String> requestParam);
 
+    default UnlinkAuthorizationRedirect unlinkAuthorizationRedirect() {
+        throw new UnsupportedOperationException("Unlink function unsupported");
+    }
+
+    default Uni<Boolean> unlinkOnCallback(MultivaluedMap<String,String> requestParam) {
+        throw new UnsupportedOperationException("unlink function unsupported");
+    }
+
 }

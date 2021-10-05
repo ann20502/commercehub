@@ -27,6 +27,14 @@ public class LinkClientDefault implements LinkClient {
     @LinkPreferred
     TokenResponseHandler tokenResponseHandler;
 
+    @Inject
+    @LinkPreferred
+    UnlinkAuthorizationRedirect unlinkAuthorizationRedirect;
+
+    @Inject
+    @LinkPreferred
+    UnlinkCallbackHandler unlinkCallbackHandler;
+
     @Override
     public AuthorizationRedirect authorizationRedirect() {
         return authorizationRedirect;
@@ -36,6 +44,16 @@ public class LinkClientDefault implements LinkClient {
     public Uni<AuthorizationResponse> onCallback(MultivaluedMap<String,String> requestParam) {
         Uni<TokenResponse> tokenResponse = authorizationCodeHandler.handle(requestParam);
         return tokenResponseHandler.handle(tokenResponse);
+    }
+
+    @Override
+    public UnlinkAuthorizationRedirect unlinkAuthorizationRedirect() {
+        return unlinkAuthorizationRedirect;
+    }
+
+    @Override
+    public Uni<Boolean> unlinkOnCallback(MultivaluedMap<String, String> requestParam) {
+        return unlinkCallbackHandler.handle(requestParam);
     }
 
 }

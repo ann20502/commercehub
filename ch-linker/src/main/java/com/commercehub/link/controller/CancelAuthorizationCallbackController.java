@@ -15,8 +15,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
-@Path("/link")
-public class AuthorizationCodeController {
+@Path("/unlink")
+public class CancelAuthorizationCallbackController {
 
     @Inject
     UriInfo uriInfo;
@@ -35,11 +35,11 @@ public class AuthorizationCodeController {
     @Path("/callback/{client}/{state}")
     public Uni<RestResponse<Void>> execute(@PathParam("client") String client, @PathParam("state") String state) {
         final String destination = getRedirectUri(state); // Not sure if this is the right way to do ...
-        return linkClient.onCallback(uriInfo.getQueryParameters())
-            .map(response -> destination)
-            .map(redirectUri -> redirectUri == null ? "/" : redirectUri)
-            .map(redirectUri -> UriBuilder.fromUri(redirectUri).build())
-            .map(RestResponse::seeOther);
+        return linkClient.unlinkOnCallback(uriInfo.getQueryParameters())
+                .map(response -> destination)
+                .map(redirectUri -> redirectUri == null ? "/" : redirectUri)
+                .map(redirectUri -> UriBuilder.fromUri(redirectUri).build())
+                .map(RestResponse::seeOther);
     }
 
     private String getRedirectUri(String state) {

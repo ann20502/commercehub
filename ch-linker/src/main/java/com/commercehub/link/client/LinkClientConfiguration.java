@@ -21,4 +21,7 @@ public interface LinkClientConfiguration {
     @WithName("api-version-path")
     Optional<String> apiVersionPath();
 
+    @WithName("unlink-redirect-path")
+    String unlinkRedirectPath();
+
 }

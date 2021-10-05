@@ -34,8 +34,12 @@ public class LinkFilter {
     private boolean isLinkRequest(ContainerRequestContext context) {
         final String PATH_AUTHORIZATION_REQUEST = "/link/login";
         final String PATH_AUTHORIZATION_CODE = "/link/callback";
+        final String PATH_CANCEL_AUTHORIZATION_REQUEST = "/unlink/login";
+        final String PATH_CANCEL_AUTHORIZATION_CALLBACK = "/unlink/callback";
         return context.getUriInfo().getPath().startsWith(PATH_AUTHORIZATION_REQUEST)
-                || context.getUriInfo().getPath().startsWith(PATH_AUTHORIZATION_CODE);
+                || context.getUriInfo().getPath().startsWith(PATH_AUTHORIZATION_CODE)
+                || context.getUriInfo().getPath().startsWith(PATH_CANCEL_AUTHORIZATION_REQUEST)
+                || context.getUriInfo().getPath().startsWith(PATH_CANCEL_AUTHORIZATION_CALLBACK);
     }
 
     private String getClient(ContainerRequestContext context) {
