@@ -2,7 +2,7 @@ package com.commercehub.link.controller;
 
 import com.commercehub.link.client.LinkClient;
 import com.commercehub.link.qualifier.LinkPreferred;
-import org.jboss.resteasy.reactive.RestResponse;
+import io.smallrye.mutiny.Uni;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -21,9 +21,11 @@ public class AuthorizationRequestController {
 
     @GET
     @Path("/login/{client}")
-    public RestResponse<Void> execute(@PathParam("client") String client) {
+    public Uni<AuthorizationRedirectUri> execute(@PathParam("client") String client) {
         URI uri = getUri();
-        return RestResponse.temporaryRedirect(uri);
+        System.out.println("Uri: " + uri.toString());
+        AuthorizationRedirectUri result = new AuthorizationRedirectUri(uri.toString());
+        return Uni.createFrom().item(result);
     }
 
     private URI getUri() {
@@ -33,6 +35,15 @@ public class AuthorizationRequestController {
             builder.queryParam(entry.getKey(), entry.getValue());
         }
         return builder.build();
+    }
+
+    public static class AuthorizationRedirectUri {
+
+        public final String uri;
+
+        public AuthorizationRedirectUri(String uri) {
+            this.uri = uri;
+        }
     }
 
 }

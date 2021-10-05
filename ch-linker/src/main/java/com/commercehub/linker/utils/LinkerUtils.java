@@ -3,7 +3,7 @@ package com.commercehub.linker.utils;
 public class LinkerUtils {
 
     public static String getImagePath(String platform) {
-        return "/logo-" + platform + ".png";
+        return "/images/logo-" + platform + ".png";
     }
 
     public static String getAuthPath(String platform) {

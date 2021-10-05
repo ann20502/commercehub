@@ -12,8 +12,8 @@ public interface LinkClientConfiguration {
     @WithName("client-secret")
     String clientSecret();
 
-    @WithName("redirect-uri")
-    String redirectUri();
+    @WithName("redirect-path")
+    String redirectPath();
 
     @WithName("api-base-path")
     String apiBasePath();

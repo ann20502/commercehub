@@ -12,8 +12,7 @@ import io.vertx.core.http.impl.CookieImpl;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import javax.ws.rs.core.UriBuilder;
-import java.net.URI;
+import javax.ws.rs.core.UriInfo;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -33,6 +32,9 @@ public class AuthorizationRedirectShopee implements AuthorizationRedirect {
 
     @Inject
     HttpServerRequest request;
+
+    @Inject
+    UriInfo uriInfo;
 
     @Inject
     HttpServerResponse response;
@@ -62,8 +64,8 @@ public class AuthorizationRedirectShopee implements AuthorizationRedirect {
 
         final String ID = UUID.randomUUID().toString();
         setCookie(ID);
-        System.out.println("STATE: " + ID);
-        final String REDIRECT_URI = configuration.redirectUri() + "/" + ID;
+        final String REDIRECT_URI = getRedirectUri(ID);
+        System.out.println("Redirect URI: " + REDIRECT_URI);
 
         result.put(PARAM_PARTNER_ID, PARTNER_ID);
         result.put(PARAM_REDIRECT, REDIRECT_URI);
@@ -73,7 +75,12 @@ public class AuthorizationRedirectShopee implements AuthorizationRedirect {
         return result;
     }
 
-    // host-only cookie
+    private String getRedirectUri(String id) {
+        String redirectPath = configuration.redirectPath();
+        String finalRedirectPath = redirectPath.startsWith("/") ? redirectPath.substring(1) : redirectPath;
+        return uriInfo.getBaseUri().toString() + finalRedirectPath + "/" + id;
+    }
+
     private void setCookie(String id) {
         String redirectUri = request.getParam("redirectUri");
         Cookie cookie = new CookieImpl(id, redirectUri);
@@ -81,9 +88,17 @@ public class AuthorizationRedirectShopee implements AuthorizationRedirect {
         response.addCookie(cookie);
     }
 
+    /*
+        Not require cos it can't support cross domain, for example:
+        -- localhost & 127.0.0.1
+     */
+    private String getCookieDomain() {
+        System.out.println("Request URI Host: " + uriInfo.getRequestUri().getHost());
+        return uriInfo.getRequestUri().getHost();
+    }
+
     private String getCookiePath() {
-        URI uri = UriBuilder.fromUri(configuration.redirectUri()).build();
-        return uri.getPath();
+        return configuration.redirectPath();
     }
 
 }

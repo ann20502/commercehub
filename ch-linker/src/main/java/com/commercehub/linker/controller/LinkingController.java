@@ -22,8 +22,8 @@ public class LinkingController {
     public Multi<Linking> execute() {
         return vm.getAll().onItem().transformToMulti(linking -> Multi.createFrom().iterable(linking))
             .map(linking -> {
-                final String pathLogo = linking.getLogo();
-                linking.setLogo(uriInfo.getBaseUri().toString() + pathLogo);
+//                final String pathLogo = linking.getLogo();
+//                linking.setLogo(uriInfo.getBaseUri().toString() + pathLogo);
                 return linking;
             });
     }
