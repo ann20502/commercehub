@@ -1,14 +1,11 @@
 package com.commercehub.link.client.implementation;
 
-import com.commercehub.link.client.AuthorizationRedirect;
 import com.commercehub.link.client.UnlinkAuthorizationRedirect;
 import com.commercehub.link.qualifier.LinkDefault;
 import com.commercehub.link.qualifier.LinkPreferred;
-import com.commercehub.link.qualifier.LinkQualifier;
 import com.commercehub.link.qualifier.LinkQualifierLiteral;
 import com.commercehub.link.request.LinkRequestDataHolder;
 
-import javax.enterprise.context.Dependent;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;

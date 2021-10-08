@@ -42,4 +42,10 @@ public class ShopeeUtils {
         }
     }
 
+    public static long getExpiry(long currentTimeMillis, Integer expireInSecond) {
+        final long BUFFER_10_SECONDS = 10000L;
+        final long expireInMillis = expireInSecond * 1000L;
+        return currentTimeMillis + expireInMillis - BUFFER_10_SECONDS;
+    }
+
 }

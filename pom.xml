@@ -14,6 +14,7 @@
         <module>ch-rest-client</module>
         <module>ch-resource-server</module>
         <module>ch-linker</module>
+        <module>ch-etl</module>
     </modules>
 
     <properties>
