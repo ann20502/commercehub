@@ -4,6 +4,7 @@ import com.commercehub.link.client.AuthorizationRedirect;
 import com.commercehub.link.client.LinkClientConfiguration;
 import com.commercehub.link.qualifier.LinkDefault;
 import com.commercehub.link.qualifier.LinkPreferred;
+import com.commercehub.link.client.repository.LinkingRequest;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -24,7 +25,7 @@ public class AuthorizationRedirectDefault implements AuthorizationRedirect {
     }
 
     @Override
-    public Map<String, Object> param() {
+    public Map<String, Object> param(LinkingRequest request) {
         return new HashMap<>();
     }
 

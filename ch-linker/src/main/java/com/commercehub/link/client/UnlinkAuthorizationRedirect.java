@@ -6,6 +6,6 @@ public interface UnlinkAuthorizationRedirect {
 
     String redirectUri();
 
-    Map<String,Object> param();
+    Map<String,Object> param(String documentId);
 
 }

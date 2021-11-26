@@ -12,7 +12,7 @@ import javax.ws.rs.core.MultivaluedMap;
 public class UnlinkCallbackHandlerDefault implements UnlinkCallbackHandler {
 
     @Override
-    public Uni<Boolean> handle(MultivaluedMap<String, String> reqParam) {
+    public Uni<Boolean> handle(String documentId, MultivaluedMap<String, String> reqParam) {
         return Uni.createFrom().item(true);
     }
 

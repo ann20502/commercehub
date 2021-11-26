@@ -1,10 +1,10 @@
 package com.commercehub.link.client.shopee;
 
-import com.commercehub.common.ShopeeUtils;
 import com.commercehub.link.client.AuthorizationRedirect;
 import com.commercehub.link.client.LinkClientConfiguration;
 import com.commercehub.link.qualifier.LinkPreferred;
 import com.commercehub.link.qualifier.LinkQualifier;
+import com.commercehub.link.client.repository.LinkingRequest;
 import io.vertx.core.http.Cookie;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
@@ -13,9 +13,7 @@ import io.vertx.core.http.impl.CookieImpl;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.ws.rs.core.UriInfo;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @Dependent
 @LinkQualifier("shopee")
@@ -48,15 +46,15 @@ public class AuthorizationRedirectShopee implements AuthorizationRedirect {
     }
 
     @Override
-    public Map<String,Object> param() {
-        final String clientId = configuration.clientId();
-        final String clientSecret = configuration.clientSecret();
+    public Map<String,Object> param(LinkingRequest request) {
+        final String clientId = request.getPartnerId();
+        final String clientSecret = request.getPartnerSecret();
 
         final String targetPath = configuration.apiVersionPath().isPresent() ?
                 configuration.apiVersionPath().get() + PATH_SHOP_AUTHORIZATION : PATH_SHOP_AUTHORIZATION;
 
-        final String id = UUID.randomUUID().toString(); setCookie(id);
-        final String redirectUri = getRedirectUri(id);
+//        final String id = UUID.randomUUID().toString(); setCookie(id);
+        final String redirectUri = getRedirectUri(request.getId());
 
         return ShopeeLinkClientUtils.getRedirectParam(clientId, clientSecret, targetPath, redirectUri);
     }

@@ -13,9 +13,6 @@ public class ShopeeLinkClientUtils {
     private static final String PARAM_TIMESTAMP = "timestamp";
 
     public static Map<String,Object> getRedirectParam(String clientId, String clientSecret, String targetPath, String redirectUri) {
-        System.out.println("Target Path: " + targetPath);
-        System.out.println("Redirect Uri: " + redirectUri);
-
         final long TIMESTAMP = ShopeeUtils.getCurrentTimestamp();
         final String BASE_STRING = ShopeeUtils.getBaseString(clientId, targetPath, TIMESTAMP);
         final String SIGNATURE = ShopeeUtils.getSignature(BASE_STRING, clientSecret);

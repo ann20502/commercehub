@@ -5,6 +5,7 @@ import com.commercehub.link.client.TokenResponse;
 public class TokenResponseShopee implements TokenResponse {
 
     private final String requestId;
+    private final String partnerId;
     private final String shopId;
     private final String shopName;
     private final String shopStatus;
@@ -15,8 +16,9 @@ public class TokenResponseShopee implements TokenResponse {
     private final int[] merchantIds;
     private final int[] shopIds;
 
-    public TokenResponseShopee(String requestId, String shopId, String shopName, String shopStatus, String shopRegion, String accessToken, Long accessTokenExpiry, String refreshToken, int[] merchantIds, int[] shopIds) {
+    public TokenResponseShopee(String requestId, String partnerId, String shopId, String shopName, String shopStatus, String shopRegion, String accessToken, Long accessTokenExpiry, String refreshToken, int[] merchantIds, int[] shopIds) {
         this.requestId = requestId;
+        this.partnerId = partnerId;
         this.shopId = shopId;
         this.shopName = shopName;
         this.shopStatus = shopStatus;
@@ -50,6 +52,10 @@ public class TokenResponseShopee implements TokenResponse {
 
     public String getRequestId() {
         return requestId;
+    }
+
+    public String getPartnerId() {
+        return partnerId;
     }
 
     public String getShopId() {

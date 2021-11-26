@@ -6,12 +6,6 @@ import java.util.Optional;
 
 public interface LinkClientConfiguration {
 
-    @WithName("client-id")
-    String clientId();
-
-    @WithName("client-secret")
-    String clientSecret();
-
     @WithName("redirect-path")
     String redirectPath();
 

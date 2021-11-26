@@ -24,7 +24,7 @@ public class UnlinkAuthorizationRedirectDefault implements UnlinkAuthorizationRe
     }
 
     @Override
-    public Map<String, Object> param() {
+    public Map<String, Object> param(String partnerId) {
         return new HashMap<>();
     }
 

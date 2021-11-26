@@ -34,11 +34,44 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.smallrye.reactive</groupId>
+            <artifactId>mutiny-rxjava</artifactId>
+        </dependency>
         <!-- GCP extension -->
         <dependency>
             <groupId>io.quarkiverse.googlecloudservices</groupId>
             <artifactId>quarkus-google-cloud-firestore</artifactId>
-            <version>${googleCloudServicesVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkiverse.googlecloudservices</groupId>
+            <artifactId>quarkus-google-cloud-bigquery</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkiverse.googlecloudservices</groupId>
+            <artifactId>quarkus-google-cloud-storage</artifactId>
+        </dependency>
+        <!-- Quarkus GCP extension doesn't support google cloud task but dependency is managed, hence no need to specify version -->
+        <dependency>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>google-cloud-tasks</artifactId>
+        </dependency>
+        <!-- To compensate the shortfall of Jackson -->
+        <dependency>
+            <groupId>com.squareup.moshi</groupId>
+            <artifactId>moshi</artifactId>
+            <version>1.12.0</version>
+        </dependency>
+        <!-- Schema migration -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>8.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-gcp-bigquery</artifactId>
+            <version>8.0.1-beta</version>
         </dependency>
         <!-- Dependency Injection -->
         <dependency>
@@ -48,6 +81,23 @@
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-config-yaml</artifactId>
+        </dependency>
+        <!-- Validation -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-hibernate-validator</artifactId>
+        </dependency>
+        <!-- API documentation / Swagger -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-openapi</artifactId>
+        </dependency>
+        <!-- Leave this at the bottom so that it doesn't conflict with quarkus dependencies -->
+        <dependency>
+            <groupId>com</groupId>
+            <artifactId>ch-bigquery-jdbc</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
         <!-- For Testing -->
         <dependency>
@@ -90,12 +140,35 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire-plugin.version}</version>
                 <configuration>
+<!--                    <additionalClasspathElements>-->
+<!--                        <additionalClasspathElement>C:/Users/tzean/Documents/IdeaProjects/SimbaJDBCDriverforGoogleBigQuery42_1.2.19.1023</additionalClasspathElement>-->
+<!--                    </additionalClasspathElements>-->
                     <systemPropertyVariables>
                         <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                         <maven.home>${maven.home}</maven.home>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
+            <!-- Below will generate dependency automatically but it isn't compatible with quarkus -->
+<!--            <plugin>-->
+<!--                <groupId>com.googlecode.addjars-maven-plugin</groupId>-->
+<!--                <artifactId>addjars-maven-plugin</artifactId>-->
+<!--                <version>1.0.5</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <goals>-->
+<!--                            <goal>add-jars</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <resources>-->
+<!--                                <resource>-->
+<!--                                    <directory>${basedir}/lib</directory>-->
+<!--                                </resource>-->
+<!--                            </resources>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 

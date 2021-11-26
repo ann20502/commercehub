@@ -1,15 +1,17 @@
 package com.commercehub.linker.vm;
 
-import com.commercehub.linker.domain.entity.Linking;
-import com.commercehub.linker.domain.usecase.GetAvailablePlatformName;
+import com.commercehub.link.client.repository.Linking;
+import com.commercehub.linker.domain.entity.ExistingLinking;
+import com.commercehub.linker.domain.entity.Shop;
 import com.commercehub.linker.domain.usecase.GetExistingLinking;
-import com.commercehub.linker.utils.LinkerUtils;
+import com.commercehub.linker.domain.usecase.GetShop;
+import com.commercehub.linker.domain.usecase.SetupLinking;
+import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 @Dependent
 public class LinkingViewModel {
@@ -18,40 +20,25 @@ public class LinkingViewModel {
     GetExistingLinking getExistingLinking;
 
     @Inject
-    GetAvailablePlatformName getAvailablePlatformName;
+    GetShop getShop;
 
-    public Uni<List<Linking>> getAll() {
-        return Uni.combine().all()
-                .unis(
-                    getAvailablePlatformName.getAll().collect().asList(),
-                    getExistingLinking.getAll(Linking.STATUS_ACTIVE).collect().asList()
-                )
-                .asTuple()
-                .map(tuple -> mergeAvailableAndExisting(tuple.getItem1(), tuple.getItem2()));
+    @Inject
+    SetupLinking setupLinking;
+
+    public Multi<ExistingLinking> getExistingLinking() {
+        return getExistingLinking.getAll(true);
     }
 
-    /*
-        Don't know how to zip each item with a list ...
-        Couldn't find a way in Mutiny documentation ...
-     */
-    private List<Linking> mergeAvailableAndExisting(List<String> platforms, List<Linking> linkings) {
-        return platforms
-                .stream()
-                .map(platform -> {
-                    Linking result = new Linking();
+    public Uni<ExistingLinking> getExistingLinking(String documentId) {
+        return getExistingLinking.getById(documentId);
+    }
 
-                    for ( Linking linking : linkings ) {
-                        if ( platform.equals(linking.getPlatform()) ) {
-                            result = linking;
-                            break;
-                        }
-                    }
+    public Multi<Shop> getShop() {
+        return getShop.getAll(Linking.STATUS_ACTIVE);
+    }
 
-                    result.setPlatform(platform);
-                    result.setLogo(LinkerUtils.getImagePath(platform));
-                    return result;
-                })
-                .collect(Collectors.toList());
+    public Uni<Boolean> setupLinking(String documentId, Map<String,Object> values) {
+        return setupLinking.execute(documentId, values);
     }
 
 }

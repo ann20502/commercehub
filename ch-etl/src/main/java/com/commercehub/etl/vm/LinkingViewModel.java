@@ -1,10 +1,8 @@
 package com.commercehub.etl.vm;
 
-import com.commercehub.etl.domain.entity.Linking;
-import com.commercehub.etl.domain.usecase.linking.GetLinking;
-import com.commercehub.etl.domain.usecase.linking.MergeLinkingAndNewToken;
-import com.commercehub.etl.domain.usecase.linking.RenewToken;
-import com.commercehub.etl.domain.usecase.linking.UpdateLinking;
+import com.commercehub.etl.domain.entity.linking.Linking;
+import com.commercehub.etl.domain.entity.linking.LinkingSimplified;
+import com.commercehub.etl.domain.usecase.linking.*;
 import io.smallrye.mutiny.Multi;
 
 import javax.enterprise.context.Dependent;
@@ -25,12 +23,16 @@ public class LinkingViewModel {
     @Inject
     UpdateLinking updateLinking;
 
-    public Multi<Linking> renewTokenAndSave() {
+    @Inject
+    HideSensitiveDetail hideSensitiveDetail;
+
+    public Multi<LinkingSimplified> renewTokenAndSave() {
         return getLinking
-                .getAllWithTokenExpired(Linking.STATUS_ACTIVE)
+                .getAllWithTokenExpired()
                 .flatMap(linking -> renewToken.renew(linking).toMulti()
                         .map(output -> mergeLinkingAndNewToken.merge(linking, output)))
-                .filter(updateLinking::execute);
+                .filter(updateLinking::execute)
+                .map(linking -> hideSensitiveDetail.hide(linking));
     }
 
 }

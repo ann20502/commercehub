@@ -3,6 +3,8 @@ package com.commercehub.link.controller;
 import com.commercehub.link.client.LinkClient;
 import com.commercehub.link.qualifier.LinkPreferred;
 import io.smallrye.mutiny.Uni;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -20,17 +22,19 @@ public class CancelAuthorizationRequestController {
     LinkClient linkClient;
 
     @GET
-    @Path("/login/{client}")
-    public Uni<CancelAuthorizationRedirectUri> execute(@PathParam("client") String client) {
-        URI uri = getUri();
+    @Path("/login/{client}/{documentId}")
+    @SecurityRequirement(name = "JWT")
+    @Operation(summary = "Cancel Linking Request", description = "Generate cancel linking request and return request uri")
+    public Uni<CancelAuthorizationRedirectUri> execute(@PathParam("client") String client, @PathParam("documentId") String documentId) {
+        URI uri = getUri(documentId);
         CancelAuthorizationRedirectUri result = new CancelAuthorizationRedirectUri(uri.toString());
         return Uni.createFrom().item(result);
     }
 
-    private URI getUri() {
+    private URI getUri(String documentId) {
         UriBuilder builder = UriBuilder.fromUri(linkClient.unlinkAuthorizationRedirect().redirectUri());
-        Map<String,Object> params = linkClient.unlinkAuthorizationRedirect().param();
-        for ( Map.Entry<String,Object> entry  : params.entrySet() ) {
+        Map<String,Object> params = linkClient.unlinkAuthorizationRedirect().param(documentId);
+        for ( Map.Entry<String,Object> entry : params.entrySet() ) {
             builder.queryParam(entry.getKey(), entry.getValue());
         }
         return builder.build();

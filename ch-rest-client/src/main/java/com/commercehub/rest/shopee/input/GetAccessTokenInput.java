@@ -12,4 +12,12 @@ public class GetAccessTokenInput {
         this.shop_id = shop_id;
     }
 
+    @Override
+    public String toString() {
+        return "GetAccessTokenInput{" +
+                "code='" + code + '\'' +
+                ", partner_id=" + partner_id +
+                ", shop_id=" + shop_id +
+                '}';
+    }
 }

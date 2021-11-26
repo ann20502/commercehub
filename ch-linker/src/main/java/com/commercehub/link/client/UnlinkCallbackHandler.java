@@ -6,6 +6,6 @@ import javax.ws.rs.core.MultivaluedMap;
 
 public interface UnlinkCallbackHandler {
 
-    Uni<Boolean> handle(MultivaluedMap<String, String> reqParam);
+    Uni<Boolean> handle(String partnerId, MultivaluedMap<String, String> reqParam);
 
 }

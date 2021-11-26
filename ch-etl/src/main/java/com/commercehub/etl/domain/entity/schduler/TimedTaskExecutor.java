@@ -1,0 +1,58 @@
+package com.commercehub.etl.domain.entity.schduler;
+
+import com.commercehub.common.TimeZoneUtils;
+import com.commercehub.common.TimedTaskUtils;
+import com.commercehub.etl.domain.entity.linking.Linking;
+import com.commercehub.etl.domain.repository.TimedTaskRepository;
+import org.jboss.logging.Logger;
+
+import javax.inject.Inject;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public abstract class TimedTaskExecutor {
+
+    @Inject
+    Logger log;
+
+    public List<TimedTask> execute(Linking linking) {
+        if ( !shallRun(linking) ) { return new ArrayList<>(); }
+
+        String collectionName = collectionName();
+
+        // Get task by max time (calculate with buffer)
+        Instant now = Instant.now();
+        Duration DURATION_BUFFER = Duration.ofMinutes(30);
+        Instant maxTime = now.minus(DURATION_BUFFER);
+
+        List<TimedTask> pendingTasks = repository().getAll(
+                collectionName, linking.getPlatform(), linking.getShopId(),
+                TimedTask.STATUS_PENDING, maxTime
+        );
+        log.info("[" + pendingTasks.size() + "] pending triggers retrieved");
+
+        return pendingTasks.stream()
+                .filter(task -> runnable().run(linking, task))
+                .peek(task -> {
+                    task.setStatus(TimedTask.STATUS_STARTED);
+                    task.setStartTime(TimeZoneUtils.getDate(Instant.now().toEpochMilli()));
+                })
+                .filter(task -> repository().updateToStart(
+                        collectionName, task.getId(), task.getStatus(), task.getStartTime()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    private String collectionName() {
+        return TimedTaskUtils.COLLECTION_PREFIX + taskName();
+    }
+
+    public abstract boolean shallRun(Linking linking);
+    public abstract TimedTaskRunnable runnable();
+    public abstract String taskName();
+    public abstract TimedTaskRepository repository();
+
+}

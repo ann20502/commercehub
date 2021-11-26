@@ -4,6 +4,7 @@ public class TokenResponseShopeeBuilder {
 
     private final long currentTimeMillis;
     private String requestId;
+    private String partnerId;
     private String shopId;
     private String shopName;
     private String shopStatus;
@@ -20,6 +21,11 @@ public class TokenResponseShopeeBuilder {
 
     public TokenResponseShopeeBuilder setRequestId(String requestId) {
         this.requestId = requestId;
+        return this;
+    }
+
+    public TokenResponseShopeeBuilder setPartnerId(String partnerId) {
+        this.partnerId = partnerId;
         return this;
     }
 
@@ -75,6 +81,6 @@ public class TokenResponseShopeeBuilder {
     }
 
     public TokenResponseShopee createTokenResponseShopee() {
-        return new TokenResponseShopee(requestId, shopId, shopName, shopStatus, shopRegion, accessToken, accessTokenExpiry, refreshToken, merchantIds, shopIds);
+        return new TokenResponseShopee(requestId, partnerId, shopId, shopName, shopStatus, shopRegion, accessToken, accessTokenExpiry, refreshToken, merchantIds, shopIds);
     }
 }

@@ -2,12 +2,15 @@ package com.commercehub.link.client.shopee;
 
 import com.commercehub.link.client.LinkClientConfiguration;
 import com.commercehub.link.client.UnlinkAuthorizationRedirect;
+import com.commercehub.link.client.repository.Linking;
+import com.commercehub.link.client.repository.LinkingRepository;
 import com.commercehub.link.qualifier.LinkPreferred;
 import com.commercehub.link.qualifier.LinkQualifier;
 import io.vertx.core.http.Cookie;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.http.impl.CookieImpl;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -19,9 +22,15 @@ import java.util.UUID;
 @LinkQualifier("shopee")
 public class UnlinkAuthorizationRedirectShopee implements UnlinkAuthorizationRedirect {
 
+    @ConfigProperty(name = "quarkus.http.root-path")
+    String rootPath;
+
     @Inject
     @LinkPreferred
     LinkClientConfiguration configuration;
+
+    @Inject
+    LinkingRepository repository;
 
     @Inject
     HttpServerRequest request;
@@ -41,15 +50,17 @@ public class UnlinkAuthorizationRedirectShopee implements UnlinkAuthorizationRed
     }
 
     @Override
-    public Map<String, Object> param() {
-        final String clientId = configuration.clientId();
-        final String clientSecret = configuration.clientSecret();
+    public Map<String, Object> param(String documentId) {
+        Linking linking = repository.get(documentId);
+
+        final String clientId = linking.getPartnerId();
+        final String clientSecret = linking.getPartnerSecret();
 
         final String targetPath = configuration.apiVersionPath().isPresent() ?
                 configuration.apiVersionPath().get() + PATH_SHOP_CANCEL_AUTHORIZATION : PATH_SHOP_CANCEL_AUTHORIZATION;
 
-        final String id = UUID.randomUUID().toString(); setCookie(id);
-        final String redirectUri = getRedirectUri(id);
+        setCookie(documentId);
+        final String redirectUri = getRedirectUri(documentId);
 
         return ShopeeLinkClientUtils.getRedirectParam(clientId, clientSecret, targetPath, redirectUri);
     }
@@ -68,7 +79,9 @@ public class UnlinkAuthorizationRedirectShopee implements UnlinkAuthorizationRed
     }
 
     private String getCookiePath() {
-        return configuration.unlinkRedirectPath();
+        String finalRootPath = rootPath == null || rootPath.isEmpty() ? "" : rootPath;
+        String unlinkRedirectPath = configuration.unlinkRedirectPath();
+        return finalRootPath +  unlinkRedirectPath;
     }
 
 }

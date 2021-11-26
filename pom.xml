@@ -15,6 +15,7 @@
         <module>ch-resource-server</module>
         <module>ch-linker</module>
         <module>ch-etl</module>
+        <module>ch-bigquery-jdbc</module>
     </modules>
 
     <properties>
@@ -28,6 +29,7 @@
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
         <quarkus.platform.version>2.1.4.Final</quarkus.platform.version>
         <googleCloudServicesVersion>0.10.0</googleCloudServicesVersion>
+        <flywayVersion>8.0.1</flywayVersion>
         <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
     </properties>
 
@@ -35,7 +37,15 @@
         <dependencies>
             <dependency>
                 <groupId>${quarkus.platform.group-id}</groupId>
-                <artifactId>${quarkus.platform.artifact-id}</artifactId>
+<!--                <artifactId>${quarkus.platform.artifact-id}</artifactId>-->
+                <artifactId>quarkus-bom</artifactId>
+                <version>${quarkus.platform.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>${quarkus.platform.group-id}</groupId>
+                <artifactId>quarkus-google-cloud-services-bom</artifactId>
                 <version>${quarkus.platform.version}</version>
                 <type>pom</type>
                 <scope>import</scope>

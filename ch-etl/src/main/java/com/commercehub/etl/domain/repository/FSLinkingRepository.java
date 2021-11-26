@@ -1,12 +1,16 @@
 package com.commercehub.etl.domain.repository;
 
-import com.commercehub.etl.domain.entity.Linking;
-import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.Query;
-import com.google.cloud.firestore.QueryDocumentSnapshot;
+import com.commercehub.etl.domain.entity.linking.Linking;
+import com.commercehub.etl.domain.entity.linking.LinkingBuilder;
+import com.google.cloud.firestore.*;
+import org.jboss.logging.Logger;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalUnit;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -15,31 +19,135 @@ import java.util.stream.Collectors;
 public class FSLinkingRepository implements LinkingRepository {
 
     @Inject
+    Logger log;
+
+    @Inject
     Firestore firestore;
 
     @Override
-    public List<Linking> getAll(String platformStatus) {
-        return null;
-    }
-
-    @Override
-    public List<Linking> getAllWithTokenExpired(String platformStatus, int fastForwardMinute) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MINUTE, fastForwardMinute);
-        Date currentTime = calendar.getTime();
-
+    public Linking get(String platform, String shopId, boolean hasSetup, boolean hasLink) {
         try {
             final Query query = firestore.collection("linking")
-                    .whereEqualTo("status", platformStatus)
-                    .whereLessThanOrEqualTo("accessTokenExpiry", currentTime);
+                    .whereEqualTo("platform", platform)
+                    .whereEqualTo("shopId", shopId)
+                    .whereEqualTo("setup", hasSetup)
+                    .whereEqualTo("link", hasLink);
 
             return query
                     .get().get().getDocuments()
                     .stream()
-                    .map(snapshot -> snapshot.toObject(Linking.class))
+                    .map(snapshot -> {
+                        Linking linking = snapshot.toObject(Linking.class);
+                        return new LinkingBuilder(linking)
+                                .setId(snapshot.getId())
+                                .createLinking();
+                    })
+                    .findFirst()
+                    .orElse(null);
+        } catch( InterruptedException | ExecutionException ex ) {
+            log.error("Failed to retrieve linking: " + ex.getMessage());
+        }
+
+        return null;
+    }
+
+    @Override
+    public List<Linking> getAll(String linkingStatus) {
+        try {
+            final Query query = firestore.collection("linking")
+                    .whereEqualTo("status", linkingStatus);
+
+            return query
+                    .get().get().getDocuments()
+                    .stream()
+                    .map(snapshot -> {
+                        Linking linking = snapshot.toObject(Linking.class);
+                        return new LinkingBuilder(linking)
+                                .setId(snapshot.getId())
+                                .createLinking();
+                    })
                     .collect(Collectors.toList());
         } catch( InterruptedException | ExecutionException ex ) {
-            System.out.println("Failed to retrieve linking: " + ex.getMessage());
+            log.error("Failed to retrieve linking: " + ex.getMessage());
+        }
+
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<Linking> getAll(String linkingStatus, boolean hasSetup) {
+        try {
+            final Query query = firestore.collection("linking")
+                    .whereEqualTo("status", linkingStatus)
+                    .whereEqualTo("setup", hasSetup);
+
+            return query
+                    .get().get().getDocuments()
+                    .stream()
+                    .map(snapshot -> {
+                        Linking linking = snapshot.toObject(Linking.class);
+                        return new LinkingBuilder(linking)
+                                .setId(snapshot.getId())
+                                .createLinking();
+                    })
+                    .collect(Collectors.toList());
+        } catch( InterruptedException | ExecutionException ex ) {
+            log.error("Failed to retrieve linking: " + ex.getMessage());
+        }
+
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<Linking> getAll(String linkingStatus, boolean hasSetup, boolean hasLink) {
+        try {
+            final Query query = firestore.collection("linking")
+                    .whereEqualTo("status", linkingStatus)
+                    .whereEqualTo("setup", hasSetup)
+                    .whereEqualTo("link", hasLink);
+
+            return query
+                    .get().get().getDocuments()
+                    .stream()
+                    .map(snapshot -> {
+                        Linking linking = snapshot.toObject(Linking.class);
+                        return new LinkingBuilder(linking)
+                                .setId(snapshot.getId())
+                                .createLinking();
+                    })
+                    .collect(Collectors.toList());
+        } catch( InterruptedException | ExecutionException ex ) {
+            log.error("Failed to retrieve linking: " + ex.getMessage());
+        }
+
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<Linking> getAllWithTokenExpired(String linkingStatus, int fastForwardMinute) {
+        Duration THIRTY_MINUTES = Duration.ofMinutes(30);
+        Instant now = Instant.now();
+        Instant thirtyMinutesLater = now.plus(THIRTY_MINUTES);
+        Date targetTime = Date.from(thirtyMinutesLater);
+
+        try {
+            final Query query = firestore.collection("linking")
+                    .whereEqualTo("status", linkingStatus)
+                    .whereEqualTo("link", true)
+                    .whereLessThanOrEqualTo("accessTokenExpiry", targetTime);
+
+            return query
+                    .get().get().getDocuments()
+                    .stream()
+                    .map(snapshot -> {
+                        Linking linking = snapshot.toObject(Linking.class);
+                        return new LinkingBuilder(linking)
+                                .setId(snapshot.getId())
+                                .createLinking();
+                    })
+                    .collect(Collectors.toList());
+        } catch( InterruptedException | ExecutionException ex ) {
+            log.error("Failed to retrieve linking: " + ex.getMessage());
         }
 
         return new ArrayList<>();
@@ -48,17 +156,14 @@ public class FSLinkingRepository implements LinkingRepository {
     @Override
     public boolean updateToken(Linking linking) {
         final Map<String,Object> fieldToUpdate = getTokenFieldToUpdate(linking);
-        final Query query = firestore.collection("linking")
-                .whereEqualTo("platform", linking.getPlatform())
-                .whereEqualTo("shopId", linking.getShopId());
+        final DocumentReference documentReference = firestore.collection("linking").document(linking.getId());
 
         try {
-            for ( QueryDocumentSnapshot snapshot : query.get().get().getDocuments() ) {
-                snapshot.getReference().update(fieldToUpdate).get();
-            }
+            WriteResult writeResult = documentReference.update(fieldToUpdate).get();
+            log.info("Updated token for linking [" + linking.getId() + "] at" + writeResult.getUpdateTime());
             return true;
         } catch( InterruptedException | ExecutionException ex ) {
-            System.out.println("Failed to save token: " + ex.getMessage());
+            log.error("Failed to update token: " + ex.getMessage());
         }
 
         return false;
@@ -70,6 +175,22 @@ public class FSLinkingRepository implements LinkingRepository {
         result.put("accessTokenExpiry", linking.getAccessTokenExpiry());
         result.put("refreshToken", linking.getRefreshToken());
         return result;
+    }
+
+    @Override
+    public boolean updateSetup(String documentId, boolean setupResult) {
+        try {
+            WriteResult result = firestore.collection("linking").document(documentId)
+                    .update("setup", setupResult)
+                    .get();
+
+            log.info("Linking updated at " + result.getUpdateTime());
+            return true;
+        } catch( InterruptedException | ExecutionException ex ) {
+            log.error("Failed to update linking: " + ex.getMessage());
+        }
+
+        return false;
     }
 
 }

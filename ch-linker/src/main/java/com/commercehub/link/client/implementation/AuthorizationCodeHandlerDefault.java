@@ -3,6 +3,7 @@ package com.commercehub.link.client.implementation;
 import com.commercehub.link.client.*;
 import com.commercehub.link.qualifier.LinkDefault;
 import com.commercehub.link.qualifier.LinkPreferred;
+import com.commercehub.link.client.repository.LinkingRequest;
 import io.smallrye.mutiny.Uni;
 
 import javax.enterprise.context.Dependent;
@@ -22,9 +23,9 @@ public class AuthorizationCodeHandlerDefault implements AuthorizationCodeHandler
     TokenClient tokenClient;
 
     @Override
-    public Uni<TokenResponse> handle(MultivaluedMap<String,String> reqParam) {
+    public Uni<TokenResponse> handle(LinkingRequest request, MultivaluedMap<String,String> reqParam) {
         AuthorizationCode code = authorizationCodeMapper.map(reqParam);
-        return tokenClient.sendRequest(code);
+        return tokenClient.sendRequest(request, code);
     }
 
 }

@@ -1,30 +1,26 @@
 package com.commercehub.etl.domain.usecase.linking;
 
-import com.commercehub.etl.domain.entity.Linking;
-import com.commercehub.etl.domain.entity.RenewTokenResult;
+import com.commercehub.etl.domain.entity.linking.Linking;
+import com.commercehub.etl.domain.service.RenewTokenResult;
 import com.commercehub.etl.domain.service.RenewTokenService;
-import com.commercehub.etl.qualifier.PlatformLiteral;
+import com.commercehub.etl.domain.service.RenewTokenServiceProducer;
 import io.smallrye.mutiny.Uni;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 @Dependent
 public class RenewToken {
 
     @Inject
-    @Any
-    Instance<RenewTokenService> renewTokenServices;
+    RenewTokenServiceProducer producer;
 
     public Uni<RenewTokenResult> renew(Linking linking) {
-        RenewTokenService renewTokenService = getRenewTokenService(linking.getPlatform());
-        return renewTokenService.renew(linking);
-    }
-
-    private RenewTokenService getRenewTokenService(String platform) {
-        return renewTokenServices.select(new PlatformLiteral(platform)).get();
+        return Uni.createFrom().item(linking)
+                .flatMap(input -> {
+                    RenewTokenService renewTokenService = producer.produce(linking.getPlatform());
+                    return renewTokenService.renew(input);
+                });
     }
 
 }

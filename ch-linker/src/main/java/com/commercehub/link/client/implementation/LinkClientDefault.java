@@ -3,6 +3,7 @@ package com.commercehub.link.client.implementation;
 import com.commercehub.link.client.*;
 import com.commercehub.link.qualifier.LinkDefault;
 import com.commercehub.link.qualifier.LinkPreferred;
+import com.commercehub.link.client.repository.LinkingRequest;
 import io.smallrye.mutiny.Uni;
 
 import javax.enterprise.context.Dependent;
@@ -41,9 +42,9 @@ public class LinkClientDefault implements LinkClient {
     }
 
     @Override
-    public Uni<AuthorizationResponse> onCallback(MultivaluedMap<String,String> requestParam) {
-        Uni<TokenResponse> tokenResponse = authorizationCodeHandler.handle(requestParam);
-        return tokenResponseHandler.handle(tokenResponse);
+    public Uni<AuthorizationResponse> onCallback(LinkingRequest request, MultivaluedMap<String,String> requestParam) {
+        Uni<TokenResponse> tokenResponse = authorizationCodeHandler.handle(request, requestParam);
+        return tokenResponseHandler.handle(request, tokenResponse);
     }
 
     @Override
@@ -52,8 +53,8 @@ public class LinkClientDefault implements LinkClient {
     }
 
     @Override
-    public Uni<Boolean> unlinkOnCallback(MultivaluedMap<String, String> requestParam) {
-        return unlinkCallbackHandler.handle(requestParam);
+    public Uni<Boolean> unlinkOnCallback(String documentId, MultivaluedMap<String, String> requestParam) {
+        return unlinkCallbackHandler.handle(documentId, requestParam);
     }
 
 }
