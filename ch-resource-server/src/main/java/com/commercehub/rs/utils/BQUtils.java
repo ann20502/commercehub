@@ -1,11 +1,5 @@
 package com.commercehub.rs.utils;
 
-import com.commercehub.rs.configuration.BigQueryConfiguration;
-import org.eclipse.microprofile.config.ConfigProvider;
-import org.eclipse.microprofile.config.ConfigValue;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-
-import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 

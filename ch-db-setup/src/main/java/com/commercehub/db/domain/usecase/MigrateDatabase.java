@@ -22,7 +22,7 @@ public class MigrateDatabase {
 
     public boolean migrate(Linking linking) {
         String datasetName = DatabaseUtils.getDatasetName(linking.getPlatform(), linking.getShopId());
-        String url = flywayConfigurations.getUrlWithDefaultCredential(datasetName);
+        String url = flywayConfigurations.getUrl(datasetName);
 
         log.info("===== Adjusting schema for dataset [" + datasetName + "] =====");
         log.info("Big Query JDBC Url: " + url);

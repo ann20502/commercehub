@@ -1,5 +1,6 @@
 package com.commercehub.etl.domain.entity.schduler;
 
+import com.commercehub.configuration.GCPConfigurations;
 import com.commercehub.etl.common.ETLUtils;
 import com.commercehub.etl.domain.entity.linking.Linking;
 import com.google.cloud.storage.Storage;
@@ -21,14 +22,14 @@ public abstract class GCPAppEngineCloudTaskRunnable implements TimedTaskRunnable
     @Inject
     Storage storage;
 
-    @ConfigProperty(name = "GOOGLE.CLOUD.RUN.SERVICE.ACCOUNT.EMAIL")
-    Optional<String> serviceAccountEmail;
+    @Inject
+    GCPConfigurations configurations;
 
     @Override
     public boolean run(Linking linking, TimedTask task, String baseUri) {
         try (CloudTasksClient client = CloudTasksClient.create()) {
-            // Relies on cloud storage settings
-            String projectId = storage.getOptions().getProjectId();
+            // Rely on cloud storage settings
+            String projectId = configurations.getProjectId();
             String location = storage.get(ETLUtils.BUCKET).getLocation();
             String finalLocation = location.toLowerCase();
 
@@ -41,8 +42,9 @@ public abstract class GCPAppEngineCloudTaskRunnable implements TimedTaskRunnable
 
             log.info("Full uri: " + fullUri);
 
-            if ( serviceAccountEmail.isPresent() ) {
-                OidcToken oidcToken = OidcToken.newBuilder().setServiceAccountEmail(serviceAccountEmail.get()).build();
+            final String serviceAccountEmail = configurations.getServiceAccountEmail();
+            if ( serviceAccountEmail != null && !serviceAccountEmail.isEmpty() ) {
+                OidcToken oidcToken = OidcToken.newBuilder().setServiceAccountEmail(serviceAccountEmail).build();
                 httpRequestBuilder.setOidcToken(oidcToken);
             }
 
@@ -69,7 +71,9 @@ public abstract class GCPAppEngineCloudTaskRunnable implements TimedTaskRunnable
 
     private String getFullUri(Linking linking, TimedTask task, String baseUri) {
         String finalBaseUri = "";
-        if (serviceAccountEmail.isPresent() ) {
+
+        final String serviceAccountEmail = configurations.getServiceAccountEmail();
+        if ( serviceAccountEmail != null && !serviceAccountEmail.isEmpty() ) {
             finalBaseUri = UriBuilder.fromUri(baseUri).scheme("https").build().toString();
         } else {
             finalBaseUri = baseUri;

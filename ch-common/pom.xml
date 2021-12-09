@@ -29,6 +29,11 @@
             <artifactId>moshi</artifactId>
             <version>1.12.0</version>
         </dependency>
+        <!-- GCP configurations -->
+        <dependency>
+            <groupId>io.quarkiverse.googlecloudservices</groupId>
+            <artifactId>quarkus-google-cloud-common</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

@@ -1,6 +1,6 @@
 package com.commercehub.rs.domain.repository;
 
-import com.commercehub.rs.configuration.BigQueryConfiguration;
+import com.commercehub.configuration.GCPConfigurations;
 import com.commercehub.rs.domain.entity.SalesByCalendar;
 import com.commercehub.rs.utils.BQUtils;
 import com.google.cloud.bigquery.BigQuery;
@@ -26,11 +26,11 @@ public class BQOrderRepository implements OrderRepository {
     BigQuery bigquery;
 
     @Inject
-    BigQueryConfiguration configuration;
+    GCPConfigurations configurations;
 
     @Override
     public List<SalesByCalendar> getSalesByMonth(String dataset, LocalDate from, LocalDate to, String zone) {
-        final String TABLE_NAME = BQUtils.getTableName(configuration.projectId(), dataset, "order_create_time");
+        final String TABLE_NAME = BQUtils.getTableName(configurations.getProjectId(), dataset, "order_create_time");
         final String QUERY =
                 "SELECT DATE_TRUNC(DATE(o1.create_time, @zone), MONTH) AS create_year_month, SUM(o1.total_amount) AS total "
                         + "FROM `" + TABLE_NAME + "` o1 "
@@ -68,7 +68,7 @@ public class BQOrderRepository implements OrderRepository {
 
     @Override
     public List<SalesByCalendar> getSalesByDate(String dataset, LocalDate from, LocalDate to, String zone) {
-        final String TABLE_NAME = BQUtils.getTableName(configuration.projectId(), dataset, "order_create_time");
+        final String TABLE_NAME = BQUtils.getTableName(configurations.getProjectId(), dataset, "order_create_time");
         final String QUERY =
                 "SELECT DATE(o1.create_time, @zone) AS create_date, SUM(o1.total_amount) AS total " +
                         "FROM `" + TABLE_NAME + "` o1 " +
