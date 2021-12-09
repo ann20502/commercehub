@@ -12,6 +12,20 @@
     <artifactId>ch-bigquery-jdbc</artifactId>
 
     <dependencies>
+        <!--
+            Temp solution:
+            1. Download GoogleBigQueryJDBC42.jar from https://cloud.google.com/bigquery/docs/reference/odbc-jdbc-drivers
+            2. Put the jar to a path of your preference
+            3. Fill absolute path in <systemPath> tag
+        -->
+        <dependency>
+            <groupId>com.simba</groupId>
+            <artifactId>GoogleBigQueryJDBC42</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>C:/Users/tzean/.m2/repository/GoogleBigQueryJDBC42.jar</systemPath>
+<!--            <systemPath>${basedir}/non-maven-lib/src/main/resources/java-lib/GoogleBigQueryJDBC42.jar</systemPath>-->
+        </dependency>
         <dependency>
             <groupId>com.google.api.grpc</groupId>
             <artifactId>grpc-google-cloud-bigquerystorage-v1</artifactId>
@@ -92,12 +106,6 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>30.1.1-android</version>
-        </dependency>
-        <dependency>
-            <groupId>com</groupId>
-            <artifactId>ch-etl-GoogleBigQueryJDBC42.jar</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
