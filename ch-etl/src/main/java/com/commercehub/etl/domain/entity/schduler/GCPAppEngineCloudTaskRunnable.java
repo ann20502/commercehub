@@ -1,13 +1,17 @@
 package com.commercehub.etl.domain.entity.schduler;
 
-import com.commercehub.etl.configuration.CloudTaskConfiguration;
+import com.commercehub.etl.common.ETLUtils;
 import com.commercehub.etl.domain.entity.linking.Linking;
+import com.google.cloud.storage.Storage;
 import com.google.cloud.tasks.v2.*;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 import javax.inject.Inject;
+import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 
 public abstract class GCPAppEngineCloudTaskRunnable implements TimedTaskRunnable {
 
@@ -15,21 +19,43 @@ public abstract class GCPAppEngineCloudTaskRunnable implements TimedTaskRunnable
     Logger log;
 
     @Inject
-    CloudTaskConfiguration configuration;
+    Storage storage;
+
+    @ConfigProperty(name = "GOOGLE.CLOUD.RUN.SERVICE.ACCOUNT.EMAIL")
+    Optional<String> serviceAccountEmail;
 
     @Override
-    public boolean run(Linking linking, TimedTask task) {
+    public boolean run(Linking linking, TimedTask task, String baseUri) {
         try (CloudTasksClient client = CloudTasksClient.create()) {
-            String queuePath = QueueName.of(configuration.projectId(), configuration.location(), queueName()).toString();
+            // Relies on cloud storage settings
+            String projectId = storage.getOptions().getProjectId();
+            String location = storage.get(ETLUtils.BUCKET).getLocation();
+            String finalLocation = location.toLowerCase();
 
-            Task.Builder taskBuilder =
-                    Task.newBuilder()
-                            .setAppEngineHttpRequest(
-                                    AppEngineHttpRequest.newBuilder()
-                                            .setRelativeUri(getRelativeUri(linking,task))
-                                            .setHttpMethod(HttpMethod.POST)
-                                            .build()
-                            );
+            String queuePath = QueueName.of(projectId, finalLocation, queueName()).toString();
+
+            String fullUri = getFullUri(linking, task, baseUri);
+            HttpRequest.Builder httpRequestBuilder = HttpRequest.newBuilder()
+                    .setUrl(fullUri)
+                    .setHttpMethod(HttpMethod.POST);
+
+            log.info("Full uri: " + fullUri);
+
+            if ( serviceAccountEmail.isPresent() ) {
+                OidcToken oidcToken = OidcToken.newBuilder().setServiceAccountEmail(serviceAccountEmail.get()).build();
+                httpRequestBuilder.setOidcToken(oidcToken);
+            }
+
+            Task.Builder taskBuilder = Task.newBuilder().setHttpRequest(httpRequestBuilder.build());
+
+//            Task.Builder taskBuilder =
+//                    Task.newBuilder()
+//                            .setAppEngineHttpRequest(
+//                                    AppEngineHttpRequest.newBuilder()
+//                                            .setRelativeUri(getRelativeUri(linking,task))
+//                                            .setHttpMethod(HttpMethod.POST)
+//                                            .build()
+//                            );
 
             Task cloudTask = client.createTask(queuePath, taskBuilder.build());
             log.info("Task created: " + cloudTask.getName());
@@ -39,6 +65,19 @@ public abstract class GCPAppEngineCloudTaskRunnable implements TimedTaskRunnable
         }
 
         return false;
+    }
+
+    private String getFullUri(Linking linking, TimedTask task, String baseUri) {
+        String finalBaseUri = "";
+        if (serviceAccountEmail.isPresent() ) {
+            finalBaseUri = UriBuilder.fromUri(baseUri).scheme("https").build().toString();
+        } else {
+            finalBaseUri = baseUri;
+        }
+
+        String url = url();
+        String finalUrl = url.startsWith("/") ? url.substring(1) : url;
+        return finalBaseUri + finalUrl + "?" + getParams(linking, task);
     }
 
     private String getRelativeUri(Linking linking, TimedTask task) {

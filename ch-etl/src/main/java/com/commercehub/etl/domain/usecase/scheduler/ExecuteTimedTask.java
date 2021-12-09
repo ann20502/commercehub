@@ -11,6 +11,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import javax.ws.rs.core.UriInfo;
 import java.util.List;
 
 @Dependent
@@ -23,7 +24,11 @@ public class ExecuteTimedTask {
     @Any
     Instance<TimedTaskExecutor> executors;
 
+    @Inject
+    UriInfo uriInfo;
+
     public Multi<List<TimedTask>> execute() {
+        String baseUri = uriInfo.getBaseUri().toString();
         return Multi.createFrom()
                 .iterable(linkingRepository.getAll(Linking.STATUS_ACTIVE, true, true))
                 .collect().asMap(linking -> new ShopIdentifier(linking.getPlatform(), linking.getShopId()))
@@ -31,7 +36,7 @@ public class ExecuteTimedTask {
                 .flatMap(map -> Multi.createFrom().iterable(map.values()))
                 .flatMap(linking ->
                         Multi.createFrom().iterable(executors)
-                                .map(executor -> executor.execute(linking))
+                                .flatMap(executor -> executor.execute(linking, baseUri).toMulti())
                 );
     }
 

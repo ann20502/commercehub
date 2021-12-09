@@ -57,7 +57,7 @@ public class Utils {
         return String.join("\n", result);
     }
 
-    private static class BigDecimalAdapter {
+    public static class BigDecimalAdapter {
         @FromJson
         BigDecimal fromJson(String data) {
             return new BigDecimal(data);
@@ -69,7 +69,7 @@ public class Utils {
         }
     }
 
-    private static class InstantAdapter {
+    public static class InstantAdapter {
         @FromJson
         Instant fromJson(long data) {
             return Instant.ofEpochMilli(data);

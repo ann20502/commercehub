@@ -177,20 +177,4 @@ public class FSLinkingRepository implements LinkingRepository {
         return result;
     }
 
-    @Override
-    public boolean updateSetup(String documentId, boolean setupResult) {
-        try {
-            WriteResult result = firestore.collection("linking").document(documentId)
-                    .update("setup", setupResult)
-                    .get();
-
-            log.info("Linking updated at " + result.getUpdateTime());
-            return true;
-        } catch( InterruptedException | ExecutionException ex ) {
-            log.error("Failed to update linking: " + ex.getMessage());
-        }
-
-        return false;
-    }
-
 }

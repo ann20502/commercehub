@@ -86,10 +86,8 @@ public class ExtractNewOrderShopee {
                 .onFailure().invoke(
                         error -> {
                             log.error("Error while extracting order: " + error.getMessage());
-                            if ( error instanceof ETLRuntimeException ) {
-                                boolean result = updateTask(documentId, TimedTask.STATUS_ERROR);
-                                log.info("Failed to save orders and attempted to set task status to [" + TimedTask.STATUS_ERROR + "]: " + result);
-                            }
+                            boolean result = updateTask(documentId, TimedTask.STATUS_ERROR);
+                            log.info("Attempt to set task status to [" + TimedTask.STATUS_ERROR + "]: " + result);
                             throw new RuntimeException(error);
                         }
                 );

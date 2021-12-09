@@ -4,9 +4,12 @@ import com.commercehub.common.TimeZoneUtils;
 import com.commercehub.common.TimedTaskUtils;
 import com.commercehub.etl.domain.entity.linking.Linking;
 import com.commercehub.etl.domain.repository.TimedTaskRepository;
+import io.smallrye.mutiny.Multi;
+import io.smallrye.mutiny.Uni;
 import org.jboss.logging.Logger;
 
 import javax.inject.Inject;
+import javax.ws.rs.core.UriInfo;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -18,8 +21,8 @@ public abstract class TimedTaskExecutor {
     @Inject
     Logger log;
 
-    public List<TimedTask> execute(Linking linking) {
-        if ( !shallRun(linking) ) { return new ArrayList<>(); }
+    public Uni<List<TimedTask>> execute(Linking linking, String baseUri) {
+        if ( !shallRun(linking) ) { return Uni.createFrom().item(new ArrayList<>()); }
 
         String collectionName = collectionName();
 
@@ -34,16 +37,29 @@ public abstract class TimedTaskExecutor {
         );
         log.info("[" + pendingTasks.size() + "] pending triggers retrieved");
 
-        return pendingTasks.stream()
-                .filter(task -> runnable().run(linking, task))
-                .peek(task -> {
+        return Multi.createFrom().iterable(pendingTasks)
+                .onItem().call(task -> Uni.createFrom().nullItem().onItem().delayIt().by(Duration.ofSeconds(5)))
+                .filter(task -> runnable().run(linking, task, baseUri))
+                .map(task -> {
                     task.setStatus(TimedTask.STATUS_STARTED);
                     task.setStartTime(TimeZoneUtils.getDate(Instant.now().toEpochMilli()));
+                    return task;
                 })
                 .filter(task -> repository().updateToStart(
                         collectionName, task.getId(), task.getStatus(), task.getStartTime()
                 ))
-                .collect(Collectors.toList());
+                .collect().asList();
+
+//        return pendingTasks.stream()
+//                .filter(task -> runnable().run(linking, task))
+//                .peek(task -> {
+//                    task.setStatus(TimedTask.STATUS_STARTED);
+//                    task.setStartTime(TimeZoneUtils.getDate(Instant.now().toEpochMilli()));
+//                })
+//                .filter(task -> repository().updateToStart(
+//                        collectionName, task.getId(), task.getStatus(), task.getStartTime()
+//                ))
+//                .collect(Collectors.toList());
     }
 
     private String collectionName() {

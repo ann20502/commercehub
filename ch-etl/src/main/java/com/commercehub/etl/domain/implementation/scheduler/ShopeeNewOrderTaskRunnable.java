@@ -18,7 +18,7 @@ public class ShopeeNewOrderTaskRunnable extends GCPAppEngineCloudTaskRunnable {
 
     @Override
     public String url() {
-        return "/order/extract";
+        return "/order/extract/shopee";
     }
 
     @Override

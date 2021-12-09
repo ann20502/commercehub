@@ -29,6 +29,4 @@ public interface LinkingRepository {
 
     boolean updateToken(Linking linking);
 
-    boolean updateSetup(String documentId, boolean setupResult);
-
 }

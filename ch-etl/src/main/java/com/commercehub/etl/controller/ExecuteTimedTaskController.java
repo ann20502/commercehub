@@ -21,9 +21,8 @@ public class ExecuteTimedTaskController {
     @Inject
     SchedulerViewModel viewModel;
 
-    @Blocking // Necessary ?
     @POST
-    @Operation(summary = "Execute timed task", description = "Execute 20 pending timed task")
+    @Operation(summary = "Execute timed task", description = "Execute 10 pending timed task")
     public Uni<Result> execute() {
         return Streams.toApiResult(viewModel.executeTimedTaskTrigger());
     }

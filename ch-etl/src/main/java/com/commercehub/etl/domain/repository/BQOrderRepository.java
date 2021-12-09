@@ -1,29 +1,22 @@
 package com.commercehub.etl.domain.repository;
 
+import com.commercehub.common.DatabaseUtils;
 import com.commercehub.common.StorageUtils;
 import com.commercehub.common.Utils;
 import com.commercehub.etl.common.ETLUtils;
 import com.commercehub.etl.domain.entity.order.Order;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.bigquery.*;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
-import com.squareup.moshi.FromJson;
-import com.squareup.moshi.Moshi;
-import com.squareup.moshi.ToJson;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import org.jboss.logging.Logger;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Dependent
 public class BQOrderRepository implements OrderRepository {
@@ -61,7 +54,7 @@ public class BQOrderRepository implements OrderRepository {
 
     private boolean saveInBigQuery(String platform, String shopId, BlobIdWrapper blobIdWrapper) {
         try {
-            final String dataset = ETLUtils.getDatasetName(platform, shopId);
+            final String dataset = DatabaseUtils.getDatasetName(platform, shopId);
             TableId tableId = TableId.of(dataset, ETLUtils.TABLE_ORDER_CREATE_TIME);
             LoadJobConfiguration loadConfig =
                     LoadJobConfiguration.newBuilder(tableId, blobIdWrapper.uri)

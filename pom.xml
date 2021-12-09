@@ -16,6 +16,7 @@
         <module>ch-linker</module>
         <module>ch-etl</module>
         <module>ch-bigquery-jdbc</module>
+        <module>ch-db-setup</module>
     </modules>
 
     <properties>

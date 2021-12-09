@@ -98,7 +98,7 @@ public class FSTimedTaskRepository implements TimedTaskRepository {
                     .whereEqualTo("status", status)
                     .whereLessThanOrEqualTo("paramTimeTo", finalMaxTime)
                     .orderBy("paramTimeTo", Query.Direction.ASCENDING)
-                    .limit(20);
+                    .limit(10);
 
             return query
                     .get().get().getDocuments()
