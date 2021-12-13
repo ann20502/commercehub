@@ -45,7 +45,7 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-gcp-bigquery</artifactId>
-            <version>7.11.2-beta</version>
+            <version>7.14.0-beta</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.flywaydb</groupId>
