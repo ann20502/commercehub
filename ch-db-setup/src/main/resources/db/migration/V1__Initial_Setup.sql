@@ -12,8 +12,9 @@ CREATE TABLE order_create_time
     message_to_seller STRING,
     create_time TIMESTAMP NOT NULL,
     update_time TIMESTAMP NOT NULL,
+    extract_time TIMESTAMP NOT NULL,
     days_to_ship SMALLINT NOT NULL,
-    ship_by_date INT NOT NULL,
+    ship_by_date TIMESTAMP NOT NULL,
     buyer_user_id INT NOT NULL,
     buyer_username STRING NOT NULL,
     recipient_address STRUCT<

@@ -49,7 +49,7 @@ public class BQOrderRepository implements OrderRepository {
     }
 
     private String getObjectName() {
-        return "shopee-new-order-" + System.currentTimeMillis();
+        return "order-" + System.currentTimeMillis();
     }
 
     private boolean saveInBigQuery(String platform, String shopId, BlobIdWrapper blobIdWrapper) {

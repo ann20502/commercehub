@@ -17,6 +17,7 @@ public class OrderBuilder {
     private String messageToSeller;
     private Instant createTime;
     private Instant updateTime;
+    private Instant extractTime;
     private int daysToShip;
     private Instant shipByDate;
     private long buyerUserId;
@@ -99,6 +100,11 @@ public class OrderBuilder {
 
     public OrderBuilder setUpdateTime(Instant updateTime) {
         this.updateTime = updateTime;
+        return this;
+    }
+
+    public OrderBuilder setExtractTime(Instant extractTime) {
+        this.extractTime = extractTime;
         return this;
     }
 
@@ -223,6 +229,6 @@ public class OrderBuilder {
     }
 
     public Order createOrder() {
-        return new Order(orderSn, region, currency, cod, totalAmount, orderStatus, shippingCarrier, paymentMethod, estimatedShippingFee, messageToSeller, createTime, updateTime, daysToShip, shipByDate, buyerUserId, buyerUsername, recipientAddress, actualShippingFee, goodsToDeclare, sellerNote, sellerNoteUpdateTime, items, payTime, dropshipper, dropshipperPhone, splitUp, buyerCancelReason, cancelBy, cancelReason, actualShippingFeeConfirmed, fulfillmentFlag, pickupDoneTime, invoice, checkoutShippingCarrier, reverseShippingFee, escrow);
+        return new Order(orderSn, region, currency, cod, totalAmount, orderStatus, shippingCarrier, paymentMethod, estimatedShippingFee, messageToSeller, createTime, updateTime, extractTime, daysToShip, shipByDate, buyerUserId, buyerUsername, recipientAddress, actualShippingFee, goodsToDeclare, sellerNote, sellerNoteUpdateTime, items, payTime, dropshipper, dropshipperPhone, splitUp, buyerCancelReason, cancelBy, cancelReason, actualShippingFeeConfirmed, fulfillmentFlag, pickupDoneTime, invoice, checkoutShippingCarrier, reverseShippingFee, escrow);
     }
 }

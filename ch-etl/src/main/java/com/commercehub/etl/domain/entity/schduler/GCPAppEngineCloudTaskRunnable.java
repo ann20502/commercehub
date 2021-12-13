@@ -5,14 +5,12 @@ import com.commercehub.etl.common.ETLUtils;
 import com.commercehub.etl.domain.entity.linking.Linking;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.tasks.v2.*;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.util.Map;
-import java.util.Optional;
 
 public abstract class GCPAppEngineCloudTaskRunnable implements TimedTaskRunnable {
 

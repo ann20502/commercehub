@@ -45,6 +45,9 @@ public class Order {
     @Json(name = "update_time")
     public final Instant updateTime;
 
+    @Json(name = "extract_time")
+    public final Instant extractTime;
+
     @Json(name = "days_to_ship")
     public final int daysToShip;
 
@@ -117,7 +120,7 @@ public class Order {
     @Json(name = "escrow")
     public final Escrow escrow;
 
-    public Order(String orderSn, String region, String currency, boolean cod, BigDecimal totalAmount, String orderStatus, String shippingCarrier, String paymentMethod, BigDecimal estimatedShippingFee, String messageToSeller, Instant createTime, Instant updateTime, int daysToShip, Instant shipByDate, long buyerUserId, String buyerUsername, RecipientAddress recipientAddress, BigDecimal actualShippingFee, boolean goodsToDeclare, String sellerNote, Instant sellerNoteUpdateTime, List<Item> items, Instant payTime, String dropshipper, String dropshipperPhone, boolean splitUp, String buyerCancelReason, String cancelBy, String cancelReason, boolean actualShippingFeeConfirmed, String fulfillmentFlag, Instant pickupDoneTime, Invoice invoice, String checkoutShippingCarrier, BigDecimal reverseShippingFee, Escrow escrow) {
+    public Order(String orderSn, String region, String currency, boolean cod, BigDecimal totalAmount, String orderStatus, String shippingCarrier, String paymentMethod, BigDecimal estimatedShippingFee, String messageToSeller, Instant createTime, Instant updateTime, Instant extractTime, int daysToShip, Instant shipByDate, long buyerUserId, String buyerUsername, RecipientAddress recipientAddress, BigDecimal actualShippingFee, boolean goodsToDeclare, String sellerNote, Instant sellerNoteUpdateTime, List<Item> items, Instant payTime, String dropshipper, String dropshipperPhone, boolean splitUp, String buyerCancelReason, String cancelBy, String cancelReason, boolean actualShippingFeeConfirmed, String fulfillmentFlag, Instant pickupDoneTime, Invoice invoice, String checkoutShippingCarrier, BigDecimal reverseShippingFee, Escrow escrow) {
         this.orderSn = orderSn;
         this.region = region;
         this.currency = currency;
@@ -130,6 +133,7 @@ public class Order {
         this.messageToSeller = messageToSeller;
         this.createTime = createTime;
         this.updateTime = updateTime;
+        this.extractTime = extractTime;
         this.daysToShip = daysToShip;
         this.shipByDate = shipByDate;
         this.buyerUserId = buyerUserId;
@@ -171,6 +175,7 @@ public class Order {
                 ", messageToSeller='" + messageToSeller + '\'' +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
+                ", extractTime=" + extractTime +
                 ", daysToShip=" + daysToShip +
                 ", shipByDate=" + shipByDate +
                 ", buyerUserId=" + buyerUserId +

@@ -4,6 +4,7 @@ import com.commercehub.rest.shopee.output.GetEscrowDetailOutput;
 import com.commercehub.rest.shopee.output.GetOrderDetailOutput;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,19 +27,20 @@ public class OrderTransformer {
                 .setPaymentMethod(order.getPayment_method())
                 .setEstimatedShippingFee(order.getEstimated_shipping_fee())
                 .setMessageToSeller(order.getMessage_to_seller())
-                .setCreateTime(Instant.ofEpochMilli(order.getCreate_time()))
-                .setUpdateTime(Instant.ofEpochMilli(order.getUpdate_time()))
+                .setCreateTime(Instant.ofEpochSecond(order.getCreate_time()))
+                .setUpdateTime(Instant.ofEpochSecond(order.getUpdate_time()))
+                .setExtractTime(Instant.now())
                 .setDaysToShip(order.getDays_to_shipl())
-                .setShipByDate(Instant.ofEpochMilli(order.getShip_by_date()))
+                .setShipByDate(Instant.ofEpochSecond(order.getShip_by_date()))
                 .setBuyerUserId(order.getBuyer_user_id())
                 .setBuyerUsername(order.getBuyer_username())
                 .setRecipientAddress(address)
                 .setActualShippingFee(order.getActual_shipping_fee())
                 .setGoodsToDeclare(order.isGoods_to_declare())
                 .setSellerNote(order.getNote())
-                .setSellerNoteUpdateTime(Instant.ofEpochMilli(order.getNote_update_time()))
+                .setSellerNoteUpdateTime(Instant.ofEpochSecond(order.getNote_update_time()))
                 .setItems(items)
-                .setPayTime(Instant.ofEpochMilli(order.getPay_time()))
+                .setPayTime(Instant.ofEpochSecond(order.getPay_time()))
                 .setDropshipper(order.getDropshipper())
                 .setDropshipperPhone(order.getDropshipper_phone())
                 .setSplitUp(order.isSplit_up())
@@ -47,7 +49,7 @@ public class OrderTransformer {
                 .setCancelReason(order.getCancel_reason())
                 .setActualShippingFeeConfirmed(order.isActual_shipping_fee_confirmed())
                 .setFulfillmentFlag(order.getFulfillment_flag())
-                .setPickupDoneTime(Instant.ofEpochMilli(order.getPickup_done_time()))
+                .setPickupDoneTime(Instant.ofEpochSecond(order.getPickup_done_time()))
                 .setInvoice(invoice)
                 .setCheckoutShippingCarrier(order.getCheckout_shipping_carrier())
                 .setReverseShippingFee(order.getReverse_shipping_fee())
@@ -102,7 +104,7 @@ public class OrderTransformer {
                 .setNumber(invoice.getNumber())
                 .setSeriesNUmber(invoice.getSeries_number())
                 .setAccessKey(invoice.getAccess_key())
-                .setIssueDate(Instant.ofEpochMilli(invoice.getIssue_date()))
+                .setIssueDate(Instant.ofEpochSecond(invoice.getIssue_date()))
                 .setTotalValue(invoice.getTotal_value())
                 .setProductsTotalValue(invoice.getProducts_total_value())
                 .setTaxCode(invoice.getTax_code())

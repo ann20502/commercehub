@@ -1,6 +1,7 @@
 package com.commercehub.etl.controller.shopee;
 
 import com.commercehub.etl.vm.OrderViewModel;
+import io.smallrye.common.annotation.Blocking;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.jboss.logging.Logger;
@@ -11,8 +12,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
-@Path("/order/extract/shopee")
-public class ExtractNewOrderShopeeController {
+@Path("/order/update/shopee")
+public class ExtractOrderUpdateShopeeController {
 
     @Inject
     Logger log;
@@ -20,12 +21,13 @@ public class ExtractNewOrderShopeeController {
     @Inject
     OrderViewModel viewModel;
 
+    @Blocking
     @POST
-    @Operation(summary = "Extract New Order", description = "Extract new order from Shopee")
+    @Operation(summary = "Extract Order Update", description = "Extract order update from Shopee")
     public Uni<Integer> execute(@NotEmpty @QueryParam("documentId") String documentId) {
-        return viewModel.extractNewOrderShopee(documentId)
+        return viewModel.extractOrderUpdateShopee(documentId)
                 .map(orders -> {
-                    log.info("Extracted [" + orders.size() + "] orders");
+                    log.info("Extracted [" + orders.size() + "] order updates");
                     return orders.size();
                 });
     }

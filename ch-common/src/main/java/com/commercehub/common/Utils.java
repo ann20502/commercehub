@@ -8,6 +8,8 @@ import com.squareup.moshi.ToJson;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,8 +78,12 @@ public class Utils {
         }
 
         @ToJson
-        long toJson(Instant data) {
-            return data.toEpochMilli();
+        String toJson(Instant data) {
+            DateTimeFormatter formatter = DateTimeFormatter
+                    .ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")
+                    .withZone(ZoneId.of("UTC"));
+
+            return formatter.format(data);
         }
     }
 
