@@ -7,7 +7,3 @@ com:
           api-base-path: https://partner.test-stable.shopeemobile.com
           api-version-path: /api/v2
           unlink-redirect-path: /unlink/callback/shopee
-        lazada:
-          redirect-path: /link/callback/lazada
-          api-base-path: https://lazada.com
-          unlink-redirect-path: /unlink/callback/lazada

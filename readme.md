@@ -1,4 +1,4 @@
-# Commerce Hub Project
+# Commerce Hub
 
 This project aims to provide a way to browse sales of multiple e-commerce shops.
 With that said, it has an ETL service that extracts data from 
@@ -41,6 +41,9 @@ There are 5 services in total:
         - Cloud Scheduler
 
 # Get Started
+TODO
+
+# TODO
 TODO
 
 # Closing Note
