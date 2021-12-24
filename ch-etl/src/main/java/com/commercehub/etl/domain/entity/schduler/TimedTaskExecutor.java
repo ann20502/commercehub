@@ -62,7 +62,7 @@ public abstract class TimedTaskExecutor {
 //                .collect(Collectors.toList());
     }
 
-    private String collectionName() {
+    public String collectionName() {
         return TimedTaskUtils.COLLECTION_PREFIX + taskName();
     }
 

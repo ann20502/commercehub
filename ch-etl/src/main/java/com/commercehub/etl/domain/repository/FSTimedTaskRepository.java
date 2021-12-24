@@ -62,7 +62,6 @@ public class FSTimedTaskRepository implements TimedTaskRepository {
         }
     }
 
-    // Not in use
     @Override
     public List<TimedTask> getAll(String collectionName, String platform, String shopId, String status) {
         try {
@@ -219,6 +218,37 @@ public class FSTimedTaskRepository implements TimedTaskRepository {
         result.put("endTime", endTime);
         result.put("endTimeMillis", endTime.getTime());
         result.put("durationSecond", duration);
+        return result;
+    }
+
+    @Override
+    public boolean revertToPending(String collectionName, String documentId) {
+        try {
+            final DocumentReference documentReference = firestore.collection(collectionName).document(documentId);
+            return firestore.runTransaction(transaction -> {
+                TimedTask task = transaction.get(documentReference).get().toObject(TimedTask.class);
+                if ( task == null ) { throw new RuntimeException("Invalid document: " + collectionName + "/" + documentId); }
+
+                Map<String,Object> fieldsToUpdate = getFieldsForRevertToPending();
+                transaction.update(documentReference, fieldsToUpdate);
+                log.info("Task [" + collectionName + "/" + documentId + "] updated");
+
+                return true;
+            }).get();
+        } catch(InterruptedException | ExecutionException ex) {
+            log.error("Failed to update task: " + ex.getMessage());
+            throw new RuntimeException("Failed to update tasks: " + ex.getMessage());
+        }
+    }
+
+    private Map<String,Object> getFieldsForRevertToPending() {
+        Map<String,Object> result = new HashMap<>();
+        result.put("status", TimedTask.STATUS_PENDING);
+        result.put("startTime", null);
+        result.put("startTimeMillis", null);
+        result.put("endTime", null);
+        result.put("endTimeMillis", null);
+        result.put("durationSecond", null);
         return result;
     }
 

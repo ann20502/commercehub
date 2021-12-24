@@ -22,4 +22,6 @@ public interface TimedTaskRepository {
 
     boolean updateToEnd(String collectionName, String documentId, String status, Date endTime);
 
+    boolean revertToPending(String collectionName, String documentId);
+
 }
