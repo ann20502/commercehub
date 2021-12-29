@@ -54,6 +54,14 @@ There are 5 services in total:
     - GOOGLE_APPLICATION_CREDENTIALS<br/>
       (Credential must have read & write access to Cloud Tasks, Cloud Storage, Firestore & Big Query)
 
+
+- Create Firestore indexes for the following services:
+    - ch-linker
+    - ch-etl
+
+> Index definitions can be found in respective modules.<br/>
+> Definition files can be used with firebase CLI ``` firebase deploy --only firestore:indexes ```
+
 Once done, you may start services using command below:
 - ``` mvn clean install ```
 - ``` mvn quarkus:dev -pl ch-linker ```
