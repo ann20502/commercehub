@@ -19,7 +19,7 @@ There are 5 services in total:
     - ch-etl
         - Extracts data from authorized shops on a regular basis
     - ch-db-setup (JVM Required)
-        - Handles RDBMS schema migration tasks
+        - Handles RDBMS schema migration
 
 
 # Frameworks & Stacks
@@ -41,7 +41,7 @@ There are 5 services in total:
         - Cloud Scheduler
 
 # Get Started
-TODO
+TODO -- HERE
 
 # TODO
 TODO
