@@ -1,6 +1,5 @@
 package com.commercehub.rest.shopee;
 
-import com.commercehub.rest.shopee.filter.ShopeeClientResponseFilter;
 import com.commercehub.rest.shopee.filter.ShopeePublicApiClientRequestFilter;
 import com.commercehub.rest.shopee.input.GetAccessTokenInput;
 import com.commercehub.rest.shopee.input.PublicApiCommonParam;
