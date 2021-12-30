@@ -1,7 +1,7 @@
 package com.commercehub.etl.domain.entity.schduler;
 
+import com.commercehub.configuration.CloudStorageConfigurations;
 import com.commercehub.configuration.GCPConfigurations;
-import com.commercehub.etl.common.ETLUtils;
 import com.commercehub.etl.domain.entity.linking.Linking;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.tasks.v2.*;
@@ -23,12 +23,15 @@ public abstract class GCPAppEngineCloudTaskRunnable implements TimedTaskRunnable
     @Inject
     GCPConfigurations configurations;
 
+    @Inject
+    CloudStorageConfigurations cloudStorageConfigurations;
+
     @Override
     public boolean run(Linking linking, TimedTask task, String baseUri) {
         try (CloudTasksClient client = CloudTasksClient.create()) {
             // Rely on cloud storage settings
             String projectId = configurations.getProjectId();
-            String location = storage.get(ETLUtils.BUCKET).getLocation();
+            String location = storage.get(cloudStorageConfigurations.bucket()).getLocation();
             String finalLocation = location.toLowerCase();
 
             String queuePath = QueueName.of(projectId, finalLocation, queueName()).toString();

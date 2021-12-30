@@ -3,6 +3,7 @@ package com.commercehub.etl.domain.repository;
 import com.commercehub.common.DatabaseUtils;
 import com.commercehub.common.StorageUtils;
 import com.commercehub.common.Utils;
+import com.commercehub.configuration.CloudStorageConfigurations;
 import com.commercehub.etl.common.ETLUtils;
 import com.commercehub.etl.domain.entity.order.Order;
 import com.google.cloud.bigquery.*;
@@ -30,6 +31,9 @@ public class BQOrderRepository implements OrderRepository {
     @Inject
     Logger log;
 
+    @Inject
+    CloudStorageConfigurations configurations;
+
     @Override
     public Uni<Boolean> add(String platform, String shopId, List<Order> orders) {
         return Multi.createFrom().item(orders)
@@ -42,7 +46,7 @@ public class BQOrderRepository implements OrderRepository {
 
     private BlobIdWrapper saveInCloudStorage(List<Order> orders) {
         final String json = Utils.toJson(Order.class, orders);
-        BlobId blobId = BlobId.of(ETLUtils.BUCKET, getObjectName());
+        BlobId blobId = BlobId.of(configurations.bucket(), getObjectName());
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
         storage.create(blobInfo, json.getBytes(StandardCharsets.UTF_8), Storage.BlobTargetOption.doesNotExist());
         return new BlobIdWrapper(blobId, StorageUtils.getFullPath(blobId.getBucket(), blobId.getName()));

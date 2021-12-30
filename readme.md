@@ -41,13 +41,12 @@ There are 5 services in total:
         - Cloud Scheduler
 
 # Get Started
-- Fill up settings (mostly auth related) in application.properties for below services:
+- Create a cloud storage bucket and fill the name in `ch-etl` `application.properties`
+
+
+- Fill up settings (mostly auth related) in `application.properties` of below services:
     - ch-linker
     - ch-resource-server
-
-
-- Create a cloud storage bucket with the following name:
-    - commercehub-etl (This is meant for BigQuery & Cloud Task)
 
 
 - Set the following environment variables:
