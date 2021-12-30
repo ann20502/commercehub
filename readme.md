@@ -44,6 +44,10 @@ There are 5 services in total:
 - Create a cloud storage bucket and fill the name in `ch-etl` `application.properties`
 
 
+- Create a cloud task queue with the following name:
+    - etl-queue
+
+
 - Fill up settings (mostly auth related) in `application.properties` of below services:
     - ch-linker
     - ch-resource-server
