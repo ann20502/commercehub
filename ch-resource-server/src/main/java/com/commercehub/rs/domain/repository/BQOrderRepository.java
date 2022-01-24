@@ -32,16 +32,20 @@ public class BQOrderRepository implements OrderRepository {
     public List<SalesByCalendar> getSalesByMonth(String dataset, LocalDate from, LocalDate to, String zone) {
         final String TABLE_NAME = BQUtils.getTableName(configurations.getProjectId(), dataset, "order_create_time");
         final String QUERY =
-                "SELECT DATE_TRUNC(DATE(o1.create_time, @zone), MONTH) AS create_year_month, SUM(o1.total_amount) AS total "
-                        + "FROM `" + TABLE_NAME + "` o1 "
-                        + "JOIN "
+                "SELECT DATE_TRUNC(DATE(create_time, @zone), MONTH) AS create_year_month, SUM(total_amount) AS total "
+                        + "FROM "
                         + "( "
-                        + "    SELECT order_sn, MAX(extract_time) extract_time "
-                        + "    FROM `" + TABLE_NAME + "` "
-                        + "    WHERE DATE(create_time, @zone) BETWEEN @dateFrom AND @dateTo "
-                        + "    GROUP BY order_sn "
-                        + ") o2 ON o1.order_sn = o2.order_sn AND o1.extract_time = o2.extract_time "
-                        + "GROUP BY DATE_TRUNC(DATE(o1.create_time, @zone), MONTH) ";
+                        + "    SELECT DISTINCT o1.order_sn, o1.create_time, o1.total_amount "
+                        + "    FROM `" + TABLE_NAME + "` o1 "
+                        + "    JOIN "
+                        + "    ( "
+                        + "        SELECT order_sn, MAX(extract_time) extract_time "
+                        + "        FROM `" + TABLE_NAME + "` "
+                        + "        WHERE DATE(create_time, @zone) BETWEEN @dateFrom AND @dateTo "
+                        + "        GROUP BY order_sn "
+                        + "    ) o2 ON o1.order_sn = o2.order_sn AND o1.extract_time = o2.extract_time "
+                        + ") "
+                        + "GROUP BY DATE_TRUNC(DATE(create_time, @zone), MONTH) ";
 
         String strFrom = BQUtils.localDateToString(from);
         String strTo = BQUtils.localDateToString(to);

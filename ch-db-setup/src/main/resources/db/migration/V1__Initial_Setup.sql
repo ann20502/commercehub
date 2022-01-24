@@ -16,7 +16,7 @@ CREATE TABLE order_create_time
     days_to_ship SMALLINT NOT NULL,
     ship_by_date TIMESTAMP NOT NULL,
     buyer_user_id INT NOT NULL,
-    buyer_username STRING NOT NULL,
+    buyer_username STRING,
     recipient_address STRUCT<
         name STRING NOT NULL,
         phone STRING,
