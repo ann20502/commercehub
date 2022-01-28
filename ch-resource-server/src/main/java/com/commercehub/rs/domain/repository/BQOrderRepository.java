@@ -2,6 +2,7 @@ package com.commercehub.rs.domain.repository;
 
 import com.commercehub.configuration.GCPConfigurations;
 import com.commercehub.rs.domain.entity.SalesByCalendar;
+import com.commercehub.rs.domain.entity.TopSelling;
 import com.commercehub.rs.utils.BQUtils;
 import com.google.cloud.bigquery.BigQuery;
 import com.google.cloud.bigquery.QueryJobConfiguration;
@@ -12,6 +13,7 @@ import org.jboss.logging.Logger;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -105,6 +107,49 @@ public class BQOrderRepository implements OrderRepository {
         } catch (InterruptedException e) {
             log.error("Failed to retrieve sales by date: " + e.getMessage());
             throw new RuntimeException("Failed to retrieve sales by date: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public TopSelling getTopSelling(String dataset, LocalDate from, LocalDate to, String zone) {
+        final String TABLE_NAME = BQUtils.getTableName(configurations.getProjectId(), dataset, "order_create_time");
+        final String QUERY =
+                "SELECT i.item_id, i.item_name, i.model_name, i.image_info.image_url, SUM(i.model_quantity_purchased) AS quantity_sold " +
+                        "FROM `" + TABLE_NAME + "` o1, UNNEST(o1.items) i " +
+                        "JOIN " +
+                        "( " +
+                        "   SELECT order_sn, MAX(extract_time) extract_time " +
+                        "   FROM `" + TABLE_NAME + "` " +
+                        "   WHERE DATE(create_time, @zone) BETWEEN @dateFrom AND @dateTo " +
+                        "   GROUP BY order_sn " +
+                        ") o2 ON o1.order_sn = o2.order_sn AND o1.extract_time = o2.extract_time AND o1.order_status != 'CANCELLED' " +
+                        "GROUP BY i.item_id, i.item_name, i.model_name, i.image_info.image_url " +
+                        "ORDER BY quantity_sold DESC " +
+                        "LIMIT 5 ";
+
+        String strFrom = BQUtils.localDateToString(from);
+        String strTo = BQUtils.localDateToString(to);
+
+        QueryJobConfiguration queryConfig = QueryJobConfiguration.newBuilder(QUERY)
+                .addNamedParameter("dateFrom", QueryParameterValue.date(strFrom))
+                .addNamedParameter("dateTo", QueryParameterValue.date(strTo))
+                .addNamedParameter("zone", QueryParameterValue.string(zone))
+                .build();
+
+        try {
+            TableResult results = bigquery.query(queryConfig);
+            return StreamSupport.stream(results.getValues().spliterator(), false)
+                    .map(valueList -> new TopSelling.Item(
+                            valueList.get("item_id").getLongValue(),
+                            valueList.get("item_name").getStringValue(),
+                            valueList.get("model_name").getStringValue(),
+                            valueList.get("image_url").getStringValue(),
+                            valueList.get("quantity_sold").getLongValue()
+                    ))
+                    .collect(Collectors.collectingAndThen(Collectors.toList(), TopSelling::new));
+        } catch (InterruptedException e) {
+            log.error("Failed to retrieve top selling: " + e.getMessage());
+            throw new RuntimeException("Failed to retrieve top selling: " + e.getMessage());
         }
     }
 
