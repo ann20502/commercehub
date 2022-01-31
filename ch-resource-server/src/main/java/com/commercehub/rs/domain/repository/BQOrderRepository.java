@@ -13,7 +13,6 @@ import org.jboss.logging.Logger;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -76,16 +75,20 @@ public class BQOrderRepository implements OrderRepository {
     public List<SalesByCalendar> getSalesByDate(String dataset, LocalDate from, LocalDate to, String zone) {
         final String TABLE_NAME = BQUtils.getTableName(configurations.getProjectId(), dataset, "order_create_time");
         final String QUERY =
-                "SELECT DATE(o1.create_time, @zone) AS create_date, SUM(o1.total_amount) AS total " +
-                        "FROM `" + TABLE_NAME + "` o1 " +
-                        "JOIN " +
+                "SELECT DATE(create_time, @zone) AS create_date, SUM(total_amount) AS total " +
+                        "FROM " +
                         "( " +
-                        "    SELECT order_sn, MAX(extract_time) extract_time " +
-                        "    FROM `" + TABLE_NAME + "` " +
-                        "    WHERE DATE(create_time, @zone) BETWEEN @dateFrom AND @dateTo " +
-                        "    GROUP BY order_sn " +
-                        ") o2 ON o1.order_sn = o2.order_sn AND o1.extract_time = o2.extract_time " +
-                        "GROUP BY DATE(o1.create_time, @zone) ";
+                        "   SELECT DISTINCT o1.order_sn, o1.create_time, o1.total_amount " +
+                        "   FROM `" + TABLE_NAME + "` o1 " +
+                        "   JOIN " +
+                        "   ( " +
+                        "       SELECT order_sn, MAX(extract_time) extract_time " +
+                        "       FROM `" + TABLE_NAME + "` " +
+                        "       WHERE DATE(create_time, @zone) BETWEEN @dateFrom AND @dateTo " +
+                        "       GROUP BY order_sn " +
+                        "   ) o2 ON o1.order_sn = o2.order_sn AND o1.extract_time = o2.extract_time " +
+                        ") " +
+                        "GROUP BY DATE(create_time, @zone) ";
 
         String strFrom = BQUtils.localDateToString(from);
         String strTo = BQUtils.localDateToString(to);
@@ -114,18 +117,22 @@ public class BQOrderRepository implements OrderRepository {
     public TopSelling getTopSelling(String dataset, LocalDate from, LocalDate to, String zone) {
         final String TABLE_NAME = BQUtils.getTableName(configurations.getProjectId(), dataset, "order_create_time");
         final String QUERY =
-                "SELECT i.item_id, i.item_name, i.model_name, i.image_info.image_url, SUM(i.model_quantity_purchased) AS quantity_sold " +
-                        "FROM `" + TABLE_NAME + "` o1, UNNEST(o1.items) i " +
-                        "JOIN " +
-                        "( " +
-                        "   SELECT order_sn, MAX(extract_time) extract_time " +
-                        "   FROM `" + TABLE_NAME + "` " +
-                        "   WHERE DATE(create_time, @zone) BETWEEN @dateFrom AND @dateTo " +
-                        "   GROUP BY order_sn " +
-                        ") o2 ON o1.order_sn = o2.order_sn AND o1.extract_time = o2.extract_time AND o1.order_status != 'CANCELLED' " +
-                        "GROUP BY i.item_id, i.item_name, i.model_name, i.image_info.image_url " +
-                        "ORDER BY quantity_sold DESC " +
-                        "LIMIT 5 ";
+                "SELECT item_id, item_name, model_name, image_url, SUM(model_quantity_purchased) AS quantity_sold "
+                        + "FROM "
+                        + "( "
+                        + "    SELECT DISTINCT o1.* EXCEPT(recipient_address, items, invoice_data, escrow), i.item_id, i.item_name, i.model_name, i.image_info.image_url, i.model_quantity_purchased "
+                        + "    FROM `" + TABLE_NAME + "` o1, UNNEST(o1.items) i "
+                        + "    JOIN "
+                        + "    ( "
+                        + "        SELECT order_sn, MAX(extract_time) extract_time "
+                        + "        FROM `" + TABLE_NAME + "` "
+                        + "        WHERE DATE(create_time, @zone) BETWEEN @dateFrom AND @dateTo "
+                        + "        GROUP BY order_sn "
+                        + "    ) o2 ON o1.order_sn = o2.order_sn AND o1.extract_time = o2.extract_time AND o1.order_status != 'CANCELLED' "
+                        + ") "
+                        + "GROUP BY item_id, item_name, model_name, image_url "
+                        + "ORDER BY quantity_sold DESC "
+                        + "LIMIT 5 ";
 
         String strFrom = BQUtils.localDateToString(from);
         String strTo = BQUtils.localDateToString(to);
