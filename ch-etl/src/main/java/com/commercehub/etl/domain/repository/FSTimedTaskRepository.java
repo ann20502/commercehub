@@ -87,7 +87,7 @@ public class FSTimedTaskRepository implements TimedTaskRepository {
     }
 
     @Override
-    public List<TimedTask> getAll(String collectionName, String platform, String shopId, String status, Instant maxTime) {
+    public List<TimedTask> getAll(String collectionName, String platform, String shopId, String status, Instant maxTime, int noOfTaskToRun) {
         try {
             Date finalMaxTime = Date.from(maxTime);
 
@@ -97,7 +97,7 @@ public class FSTimedTaskRepository implements TimedTaskRepository {
                     .whereEqualTo("status", status)
                     .whereLessThanOrEqualTo("paramTimeTo", finalMaxTime)
                     .orderBy("paramTimeTo", Query.Direction.ASCENDING)
-                    .limit(10);
+                    .limit(noOfTaskToRun);
 
             return query
                     .get().get().getDocuments()

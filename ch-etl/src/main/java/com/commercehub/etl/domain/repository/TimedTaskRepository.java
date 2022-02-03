@@ -14,7 +14,7 @@ public interface TimedTaskRepository {
 
     List<TimedTask> getAll(String collectionName, String platform, String shopId, String status);
 
-    List<TimedTask> getAll(String collectionName, String platform, String shopId, String status, Instant maxTime);
+    List<TimedTask> getAll(String collectionName, String platform, String shopId, String status, Instant maxTime, int noOfTaskToRun);
 
     boolean verifyLatestAndCreate(TimedTask latestTask, String collectionName, TimedTask... tasks);
 

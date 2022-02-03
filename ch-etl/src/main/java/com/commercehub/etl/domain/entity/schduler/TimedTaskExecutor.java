@@ -6,20 +6,22 @@ import com.commercehub.etl.domain.entity.linking.Linking;
 import com.commercehub.etl.domain.repository.TimedTaskRepository;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 import javax.inject.Inject;
-import javax.ws.rs.core.UriInfo;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public abstract class TimedTaskExecutor {
 
     @Inject
     Logger log;
+
+    @ConfigProperty(name = "commercehub.etl.timed-task.executor.no-of-task-to-run", defaultValue = "10")
+    int noOfTaskToRun;
 
     public Uni<List<TimedTask>> execute(Linking linking, String baseUri) {
         if ( !shallRun(linking) ) { return Uni.createFrom().item(new ArrayList<>()); }
@@ -33,7 +35,7 @@ public abstract class TimedTaskExecutor {
 
         List<TimedTask> pendingTasks = repository().getAll(
                 collectionName, linking.getPlatform(), linking.getShopId(),
-                TimedTask.STATUS_PENDING, maxTime
+                TimedTask.STATUS_PENDING, maxTime, noOfTaskToRun
         );
         log.info("[" + pendingTasks.size() + "] pending triggers retrieved");
 
