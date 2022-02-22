@@ -9,6 +9,17 @@
             api-version-path: /api/v2
             unlink-redirect-path: /unlink/callback/shopee
 
+"%uat":
+  com:
+    commercehub:
+      link:
+        clients:
+          shopee:
+            redirect-path: /link/callback/shopee
+            api-base-path: https://partner.test-stable.shopeemobile.com
+            api-version-path: /api/v2
+            unlink-redirect-path: /unlink/callback/shopee
+
 "%prod":
   com:
     commercehub:

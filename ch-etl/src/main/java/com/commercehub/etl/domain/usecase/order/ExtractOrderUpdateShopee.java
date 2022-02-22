@@ -123,7 +123,7 @@ public class ExtractOrderUpdateShopee {
                     final long timeTo = task.getParamTimeTo().getTime() / 1000L;
                     final int pageSize = 10;
                     final GetOrderListInput apiInput = new GetOrderListInput(
-                            GetOrderListInput.TimeRangeField.CREATE_TIME,
+                            GetOrderListInput.TimeRangeField.UPDATE_TIME,
                             timeFrom, timeTo, pageSize, finalCursor
                     );
 

@@ -125,10 +125,10 @@ public class FSLinkingRepository implements LinkingRepository {
 
     @Override
     public List<Linking> getAllWithTokenExpired(String linkingStatus, int fastForwardMinute) {
-        Duration THIRTY_MINUTES = Duration.ofMinutes(30);
+        Duration FAST_FORWARD_MINUTES = Duration.ofMinutes(fastForwardMinute);
         Instant now = Instant.now();
-        Instant thirtyMinutesLater = now.plus(THIRTY_MINUTES);
-        Date targetTime = Date.from(thirtyMinutesLater);
+        Instant forwardedMinutes = now.plus(FAST_FORWARD_MINUTES);
+        Date targetTime = Date.from(forwardedMinutes);
 
         try {
             final Query query = firestore.collection("linking")
