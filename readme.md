@@ -21,6 +21,10 @@ There are 5 services in total:
     - ch-db-setup (JVM Required)
         - Handles RDBMS schema migration
 
+# Workflow
+
+![Application Workflow](https://user-images.githubusercontent.com/6287166/173289489-52db7042-9d76-40dc-af85-2d4ea9abe38c.png)
+*** Highlighted in red are the 5 services
 
 # Frameworks & Stacks
 
