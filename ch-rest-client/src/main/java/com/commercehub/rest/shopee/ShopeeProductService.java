@@ -1,6 +1,5 @@
 package com.commercehub.rest.shopee;
 
-import com.commercehub.rest.shopee.filter.ShopeeClientResponseFilter;
 import com.commercehub.rest.shopee.filter.ShopeeShopApiClientRequestFilter;
 import com.commercehub.rest.shopee.input.BoostItemInput;
 import com.commercehub.rest.shopee.input.GetItemBaseInfoInput;
