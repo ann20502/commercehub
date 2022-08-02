@@ -46,8 +46,11 @@ public class ShopeeShopApiClientRequestFilter implements ClientRequestFilter {
 
         Map<String,List<String>> finalParams = getFinalParams(params, apiPath);
         for ( Map.Entry<String,List<String>> entry : finalParams.entrySet() ) {
-            String value = String.join(",", entry.getValue());
-            builder.queryParam(entry.getKey(), value);
+            for ( String value : entry.getValue() ) {
+                builder.queryParam(entry.getKey(), value);
+            }
+//            String value = String.join(",", entry.getValue());
+//            builder.queryParam(entry.getKey(), value);
         }
         return builder.build();
     }

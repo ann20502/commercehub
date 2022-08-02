@@ -10,7 +10,11 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
                 GetOrderDetailOutput.class,
                 GetOrderListOutput.class,
                 GetShopInfoOutput.class,
-                RefreshAccessTokenOutput.class
+                RefreshAccessTokenOutput.class,
+                BoostItemOutput.class,
+                GetBoostedListOutput.class,
+                GetItemListOutput.class,
+                GetItemBaseInfoOutput.class
         }
 )
 public class ReflectionConfiguration {}
