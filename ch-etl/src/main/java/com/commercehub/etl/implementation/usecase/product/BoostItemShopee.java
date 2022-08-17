@@ -42,6 +42,14 @@ public class BoostItemShopee implements BoostItem {
         return getLinking().flatMap(this::boost);
     }
 
+    private Multi<Linking> getLinking() {
+        return Multi.createFrom()
+                .iterable(linkingRepository.getAll(Linking.STATUS_ACTIVE, true, true))
+                .collect().asMap(linking -> new ShopIdentifier(linking.getPlatform(), linking.getShopId()))
+                .toMulti()
+                .flatMap(map -> Multi.createFrom().iterable(map.values()));
+    }
+
     private Multi<Boolean> boost(Linking linking) {
         return Multi.createFrom()
                 .item(() -> boostRepository.getSetting(linking.getPlatform(), linking.getShopId()))
@@ -53,14 +61,6 @@ public class BoostItemShopee implements BoostItem {
                 .filter(ids -> !ids.isEmpty())
                 .flatMap(ids -> boostItem(linking, ids))
                 .map(output -> recordSuccessfulBoost(linking, output));
-    }
-
-    private Multi<Linking> getLinking() {
-        return Multi.createFrom()
-                .iterable(linkingRepository.getAll(Linking.STATUS_ACTIVE, true, true))
-                .collect().asMap(linking -> new ShopIdentifier(linking.getPlatform(), linking.getShopId()))
-                .toMulti()
-                .flatMap(map -> Multi.createFrom().iterable(map.values()));
     }
 
     private Multi<GetBoostedListOutput> getCurrentBoosting(Linking linking) {
@@ -82,8 +82,13 @@ public class BoostItemShopee implements BoostItem {
                 });
     }
 
-    // TODO: Optimization
-    // Bypassed ...
+    /**
+     * TODO: Optimization
+     *
+     * @param boost
+     * @param output
+     * @return return 5 items to be boosted
+     */
     private List<String> getItemToBoost(Boost boost, GetBoostedListOutput output) {
         // Exempt current boosting list from configured list
         Map<String,Long> settings = boost.getSettings();
@@ -98,10 +103,8 @@ public class BoostItemShopee implements BoostItem {
             }
         }
 
-        // Return max 10 items based on no of successful attempt
-        // This way will boost item equally
         LinkedHashMap<String, Long> linkedHashMap = summary.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue()).limit(10)
+                .sorted(Map.Entry.comparingByValue()).limit(5)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
         return new ArrayList<>(linkedHashMap.keySet());
