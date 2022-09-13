@@ -1,4 +1,4 @@
-package com.commercehub.db.openapi;
+package com.commercehub.db.detail.openapi;
 
 import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
 import org.eclipse.microprofile.openapi.annotations.info.Info;

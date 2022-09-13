@@ -1,22 +1,20 @@
-package com.commercehub.db.domain.entity;
+package com.commercehub.db.detail.repository;
 
-import com.google.cloud.firestore.annotation.Exclude;
+import com.google.cloud.firestore.annotation.DocumentId;
 import com.google.cloud.firestore.annotation.IgnoreExtraProperties;
 
 import java.util.Date;
 
 @IgnoreExtraProperties
-public class Linking {
+public class FSLinking {
 
-    public static final String STATUS_ACTIVE = "A";
-    public static final String STATUS_INACTIVE = "I";
-
-    @Exclude
+    @DocumentId
     private String id;
 
     private String status;
     private String platform;
     private String partnerId;
+    private String partnerSecret;
     private String shopId;
     private String shopName;
     private String shopStatus;
@@ -29,7 +27,26 @@ public class Linking {
     private boolean setup;
     private Date businessStartDate;
 
-    public Linking() {}
+    public FSLinking() {}
+
+    public FSLinking(String id, String status, String platform, String partnerId, String partnerSecret, String shopId, String shopName, String shopStatus, String shopRegion, String accessToken, Date accessTokenExpiry, String refreshToken, Date refreshTokenExpiry, boolean link, boolean setup, Date businessStartDate) {
+        this.id = id;
+        this.status = status;
+        this.platform = platform;
+        this.partnerId = partnerId;
+        this.partnerSecret = partnerSecret;
+        this.shopId = shopId;
+        this.shopName = shopName;
+        this.shopStatus = shopStatus;
+        this.shopRegion = shopRegion;
+        this.accessToken = accessToken;
+        this.accessTokenExpiry = accessTokenExpiry;
+        this.refreshToken = refreshToken;
+        this.refreshTokenExpiry = refreshTokenExpiry;
+        this.link = link;
+        this.setup = setup;
+        this.businessStartDate = businessStartDate;
+    }
 
     public String getId() {
         return id;
@@ -61,6 +78,14 @@ public class Linking {
 
     public void setPartnerId(String partnerId) {
         this.partnerId = partnerId;
+    }
+
+    public String getPartnerSecret() {
+        return partnerSecret;
+    }
+
+    public void setPartnerSecret(String partnerSecret) {
+        this.partnerSecret = partnerSecret;
     }
 
     public String getShopId() {
@@ -153,11 +178,12 @@ public class Linking {
 
     @Override
     public String toString() {
-        return "Linking{" +
+        return "FSLinking{" +
                 "id='" + id + '\'' +
                 ", status='" + status + '\'' +
                 ", platform='" + platform + '\'' +
                 ", partnerId='" + partnerId + '\'' +
+                ", partnerSecret='" + partnerSecret + '\'' +
                 ", shopId='" + shopId + '\'' +
                 ", shopName='" + shopName + '\'' +
                 ", shopStatus='" + shopStatus + '\'' +

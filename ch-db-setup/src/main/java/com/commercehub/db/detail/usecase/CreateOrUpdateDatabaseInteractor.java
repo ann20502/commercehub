@@ -1,8 +1,9 @@
-package com.commercehub.db.domain.usecase;
+package com.commercehub.db.detail.usecase;
 
 import com.commercehub.common.DatabaseUtils;
-import com.commercehub.db.configuration.FlywayConfigurations;
-import com.commercehub.db.domain.entity.Linking;
+import com.commercehub.db.core.entity.Linking;
+import com.commercehub.db.core.usecase.CreateOrUpdateDatabase;
+import com.commercehub.db.core.usecase.GetFlywayUrl;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.output.MigrateResult;
 import org.flywaydb.core.api.output.RepairResult;
@@ -12,17 +13,18 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 @Dependent
-public class MigrateDatabase {
+public class CreateOrUpdateDatabaseInteractor implements CreateOrUpdateDatabase {
 
     @Inject
     Logger log;
 
     @Inject
-    FlywayConfigurations flywayConfigurations;
+    GetFlywayUrl getFlywayUrl;
 
-    public boolean migrate(Linking linking) {
-        String datasetName = DatabaseUtils.getDatasetName(linking.getPlatform(), linking.getShopId());
-        String url = flywayConfigurations.getUrl(datasetName);
+    @Override
+    public boolean execute(Linking linking) {
+        String datasetName = DatabaseUtils.getDatasetName(linking.platform, linking.shopId);
+        String url = getFlywayUrl.execute(datasetName);
 
         log.info("===== Adjusting schema for dataset [" + datasetName + "] =====");
         log.info("Big Query JDBC Url: " + url);
