@@ -22,7 +22,7 @@ public abstract class TimedTaskExecutorWithDelay implements TimedTaskExecutor {
 
     private final Duration FIVE_SECONDS = Duration.ofSeconds(5);
 
-    // Injects UrlInfo after DELAY will cause null pointer exception as the thread switch lose the context
+    // Injects UrlInfo after DELAY will cause null pointer exception due to thread switch
     @Override
     public Uni<Boolean> execute(Linking linking) {
         return Multi.createFrom()

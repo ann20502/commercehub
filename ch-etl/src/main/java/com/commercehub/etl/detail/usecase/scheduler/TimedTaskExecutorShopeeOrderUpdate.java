@@ -3,6 +3,7 @@ package com.commercehub.etl.detail.usecase.scheduler;
 import com.commercehub.etl.core.entity.linking.Linking;
 import com.commercehub.etl.core.repository.TimedTaskRepository;
 import com.commercehub.etl.core.usecase.scheduler.TimedTaskRunnable;
+import com.commercehub.gcp.core.usecase.GetHttpScheme;
 
 import javax.enterprise.context.Dependent;
 import javax.ws.rs.core.UriInfo;
@@ -11,13 +12,15 @@ import java.time.Duration;
 @Dependent
 public class TimedTaskExecutorShopeeOrderUpdate extends TimedTaskExecutorWithDelay {
 
+    private final GetHttpScheme getHttpScheme;
     private final TimedTaskRepository repository;
     private final TimedTaskRunnableShopeeOrderUpdate runnable;
 
-    public TimedTaskExecutorShopeeOrderUpdate(TimedTaskRepository repository, TimedTaskRunnableShopeeOrderUpdate runnable, UriInfo uriInfo) {
+    public TimedTaskExecutorShopeeOrderUpdate(GetHttpScheme getHttpScheme, TimedTaskRepository repository, TimedTaskRunnableShopeeOrderUpdate runnable, UriInfo uriInfo) {
+        this.getHttpScheme = getHttpScheme;
         this.repository = repository;
         this.runnable = runnable;
-        this.runnable.setBaseUri(uriInfo.getBaseUri().toString());
+        this.runnable.setBaseUri(uriInfo.getBaseUriBuilder().scheme(getHttpScheme.execute()).build().toString());
     }
 
     @Override
