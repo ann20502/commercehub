@@ -90,7 +90,7 @@ Once done, you may start services using command below:
 > Please note that `ch-db-setup` does NOT work in native but JVM
 
 # TODO
-TODO
+1. Refactor com.commercehub.link package (under ch-linker module) with Clean Architecture
 
 # Closing Note
 TODO
