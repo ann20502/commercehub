@@ -2,15 +2,17 @@ package com.commercehub.link.controller;
 
 import com.commercehub.link.client.AuthorizationRedirect;
 import com.commercehub.link.client.LinkClient;
-import com.commercehub.link.qualifier.LinkPreferred;
 import com.commercehub.link.client.repository.LinkingRequest;
 import com.commercehub.link.client.repository.LinkingRequestRepository;
+import com.commercehub.link.qualifier.LinkPreferred;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.Map;

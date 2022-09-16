@@ -1,6 +1,7 @@
 package com.commercehub.db.core.repository;
 
 import com.commercehub.db.core.entity.Linking;
+
 import java.util.List;
 
 public interface LinkingRepository {

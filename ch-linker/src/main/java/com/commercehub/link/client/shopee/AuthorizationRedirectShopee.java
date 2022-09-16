@@ -2,9 +2,9 @@ package com.commercehub.link.client.shopee;
 
 import com.commercehub.link.client.AuthorizationRedirect;
 import com.commercehub.link.client.LinkClientConfiguration;
+import com.commercehub.link.client.repository.LinkingRequest;
 import com.commercehub.link.qualifier.LinkPreferred;
 import com.commercehub.link.qualifier.LinkQualifier;
-import com.commercehub.link.client.repository.LinkingRequest;
 import io.vertx.core.http.Cookie;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;

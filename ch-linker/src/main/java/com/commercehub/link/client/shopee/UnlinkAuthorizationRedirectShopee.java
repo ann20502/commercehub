@@ -16,7 +16,6 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.ws.rs.core.UriInfo;
 import java.util.Map;
-import java.util.UUID;
 
 @Dependent
 @LinkQualifier("shopee")

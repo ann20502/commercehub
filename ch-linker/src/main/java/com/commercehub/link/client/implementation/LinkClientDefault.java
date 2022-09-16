@@ -1,9 +1,9 @@
 package com.commercehub.link.client.implementation;
 
 import com.commercehub.link.client.*;
+import com.commercehub.link.client.repository.LinkingRequest;
 import com.commercehub.link.qualifier.LinkDefault;
 import com.commercehub.link.qualifier.LinkPreferred;
-import com.commercehub.link.client.repository.LinkingRequest;
 import io.smallrye.mutiny.Uni;
 
 import javax.enterprise.context.Dependent;

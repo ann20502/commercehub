@@ -2,9 +2,9 @@ package com.commercehub.link.client.implementation;
 
 import com.commercehub.link.client.AuthorizationRedirect;
 import com.commercehub.link.client.LinkClientConfiguration;
+import com.commercehub.link.client.repository.LinkingRequest;
 import com.commercehub.link.qualifier.LinkDefault;
 import com.commercehub.link.qualifier.LinkPreferred;
-import com.commercehub.link.client.repository.LinkingRequest;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;

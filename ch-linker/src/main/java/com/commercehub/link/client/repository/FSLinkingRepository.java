@@ -2,14 +2,13 @@ package com.commercehub.link.client.repository;
 
 import com.commercehub.link.exception.LinkRuntimeException;
 import com.google.cloud.Timestamp;
-import com.google.cloud.firestore.*;
+import com.google.cloud.firestore.DocumentSnapshot;
+import com.google.cloud.firestore.Firestore;
 import org.jboss.logging.Logger;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.StreamSupport;
 
 @Dependent
 public class FSLinkingRepository implements LinkingRepository {
@@ -57,7 +56,7 @@ public class FSLinkingRepository implements LinkingRepository {
             Timestamp updateTime = firestore.collection("linking").document(documentId)
                     .set(linking).get().getUpdateTime();
 
-            log.info("Document " + documentId + " created/updated at " + updateTime.toString());
+            log.info("Document " + documentId + " created/updated at " + updateTime);
             return true;
         } catch (InterruptedException | ExecutionException ex) {
             log.error("Failed to insert/update linking: " + ex.getMessage());

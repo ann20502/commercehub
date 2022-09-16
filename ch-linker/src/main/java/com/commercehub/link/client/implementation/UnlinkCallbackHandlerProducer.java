@@ -1,6 +1,5 @@
 package com.commercehub.link.client.implementation;
 
-import com.commercehub.link.client.UnlinkAuthorizationRedirect;
 import com.commercehub.link.client.UnlinkCallbackHandler;
 import com.commercehub.link.qualifier.LinkDefault;
 import com.commercehub.link.qualifier.LinkPreferred;

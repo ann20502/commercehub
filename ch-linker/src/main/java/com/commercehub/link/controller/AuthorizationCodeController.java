@@ -1,15 +1,14 @@
 package com.commercehub.link.controller;
 
 import com.commercehub.link.client.LinkClient;
-import com.commercehub.link.qualifier.LinkPreferred;
 import com.commercehub.link.client.repository.LinkingRequest;
 import com.commercehub.link.client.repository.LinkingRequestRepository;
+import com.commercehub.link.qualifier.LinkPreferred;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.http.Cookie;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import org.eclipse.microprofile.openapi.annotations.Operation;
-import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.reactive.RestResponse;
 
