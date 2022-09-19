@@ -75,6 +75,10 @@ Once done, you may start services using command below:
 - ``` mvn quarkus:dev -pl ch-resource-server ```
 - ``` mvn quarkus:dev -pl ch-etl ```
 
+# Deployment
+If you are using GCP cloud run to host `ch-etl` module, you may configure properties below if authentication required:
+  - quarkus.google.cloud.service-account-email
+
 # Database Schema Migration
 1. Run service `ch-db-setup` using the following commands:
 - ``` mvn clean install ```

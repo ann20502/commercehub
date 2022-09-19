@@ -90,7 +90,7 @@ public class BQProductRepositoryShopee implements ProductRepositoryShopee {
         }
 
         if ( !storage.delete(blobIdWrapper.blobId) ) {
-            log.error("Failed to delete item with update file in cloud storage");
+            log.error("Failed to delete item with update FILE in cloud storage");
         }
 
         return true;

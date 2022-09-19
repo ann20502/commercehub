@@ -46,7 +46,7 @@ public class BQOrderRepositoryShopee implements OrderRepositoryShopee {
         }
 
         if ( !storage.delete(blobIdWrapper.blobId) ) {
-            log.error("Failed to delete shopee order file in cloud storage");
+            log.error("Failed to delete shopee order FILE in cloud storage");
         }
 
         return true;

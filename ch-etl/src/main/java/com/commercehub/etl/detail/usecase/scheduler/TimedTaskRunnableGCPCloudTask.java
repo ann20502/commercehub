@@ -51,7 +51,7 @@ public abstract class TimedTaskRunnableGCPCloudTask implements TimedTaskRunnable
                             .setHttpRequest(httpRequestBuilder.build());
 
             Task cloudTask = client.createTask(queuePath, taskBuilder.build());
-            log.info("Task created: " + cloudTask.getName());
+            log.info("Successfully submit task to cloud task");
 
             return true;
         } catch(IOException ioe) {

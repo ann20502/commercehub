@@ -2,19 +2,20 @@ package com.commercehub.api.common;
 
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
-import org.jboss.logging.Logger;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Streams {
 
-    private static final Logger log = Logger.getLogger(Streams.class);
+    private static final Logger log = Logger.getLogger(Streams.class.getName());
 
     public static <T> Uni<Result> toApiResult(Uni<T> stream) {
         return stream
                 .map(input -> new Result(input, ""))
                 .onFailure().recoverWithItem(
                         error -> {
-                            log.error("Api error: " + error.getMessage());
-                            error.printStackTrace();
+                            log.log(Level.SEVERE, "Api error: " + error.getMessage(), error);
                             return new Result(null, error.getMessage());
                         }
                 );
@@ -25,8 +26,7 @@ public class Streams {
                 .map(input -> new Result(input, ""))
                 .onFailure().recoverWithItem(
                         error -> {
-                            log.error("Api error: " + error.getMessage());
-                            error.printStackTrace();
+                            log.log(Level.SEVERE, "Api error: " + error.getMessage(), error);
                             return new Result(null, error.getMessage());
                         }
                 );

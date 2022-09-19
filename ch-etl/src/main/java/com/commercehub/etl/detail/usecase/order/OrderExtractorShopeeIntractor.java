@@ -79,11 +79,15 @@ public class OrderExtractorShopeeIntractor implements OrderExtractorShopee {
                             .convert().with(UniRxConverters.toObservable());
                 })
                 .filter(output -> {
-                    log.info("Order list output: " + output);
                     if ( output.getError() != null && output.getError().length() > 0 ) {
-                        log.error("Error while extracting order list: " + output.getMessage());
-                        log.error(output);
-                        throw new RuntimeException("Error while extracting order list: " + output.getMessage());
+                        final String MSG =
+                                "Error while extracting order list: "
+                                + output.getError() + " - "
+                                + output.getMessage();
+                        log.error(MSG);
+                        throw new RuntimeException(MSG);
+                    } else {
+                        log.info("Found [" + output.getResponse().getOrder_list().size() + "] order(s)");
                     }
                     return true;
                 })
@@ -130,10 +134,13 @@ public class OrderExtractorShopeeIntractor implements OrderExtractorShopee {
                     return orderService.getOrderDetail(commonParam, apiInput).toMulti();
                 })
                 .filter(orderDetailOutput -> {
-                    log.info("Order Detail output: " + orderDetailOutput);
                     if ( orderDetailOutput.getError() != null && orderDetailOutput.getError().length() > 0 ) {
-                        log.error("Error while extracting order detail: " + orderDetailOutput.getMessage());
-                        throw new RuntimeException("Error while extracting order detail: " + orderDetailOutput.getMessage());
+                        final String MSG =
+                                "Error while extracting order detail: "
+                                + orderDetailOutput.getError() + " - "
+                                + orderDetailOutput.getMessage();
+                        log.error(MSG);
+                        throw new RuntimeException(MSG);
                     }
                     return true;
                 });
@@ -145,12 +152,11 @@ public class OrderExtractorShopeeIntractor implements OrderExtractorShopee {
                 .flatMap(orderDetailOutput ->
                         getOrderEscrow(linking, orderDetailOutput.getOrder_sn())
                                 .map(escrow -> OrderShopeeTransformer.from(orderDetailOutput, escrow))
-                                .toMulti()
                 );
     }
 
-    private Uni<GetEscrowDetailOutput> getOrderEscrow(Linking linking, String orderSn) {
-        return Uni.createFrom()
+    private Multi<GetEscrowDetailOutput> getOrderEscrow(Linking linking, String orderSn) {
+        return Multi.createFrom()
                 .item(orderSn)
                 .flatMap(mOrderSn -> {
                     final int partnerId = Integer.parseInt(linking.partnerId);
@@ -162,7 +168,18 @@ public class OrderExtractorShopeeIntractor implements OrderExtractorShopee {
                     );
 
                     GetEscrowDetailInput input = new GetEscrowDetailInput(mOrderSn);
-                    return paymentService.getEscrowDetail(commonParam, input);
+                    return paymentService.getEscrowDetail(commonParam, input).toMulti();
+                })
+                .filter(escrowDetailOutput -> {
+                    if ( escrowDetailOutput.getError() != null && escrowDetailOutput.getError().length() > 0 ) {
+                        final String MSG =
+                                "Error while extracting order escrow: "
+                                        + escrowDetailOutput.getError() + " - "
+                                        + escrowDetailOutput.getMessage();
+                        log.error(MSG);
+                        throw new RuntimeException(MSG);
+                    }
+                    return true;
                 });
     }
 

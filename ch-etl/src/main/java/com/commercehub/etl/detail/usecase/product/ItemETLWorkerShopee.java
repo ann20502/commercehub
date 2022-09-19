@@ -103,11 +103,14 @@ public class ItemETLWorkerShopee implements ItemETLWorker {
                             .convert().with(MultiRxConverters.toObservable());
                 })
                 .filter(output -> {
-                    log.info("Get item list output: " + output);
                     if (output.getError() != null && output.getError().length() > 0) {
-                        log.error("Error while getting item list: " + output.getMessage());
-                        log.error(output);
-                        throw new RuntimeException("Error while getting item list: " + output.getMessage());
+                        final String MSG =
+                                "Error while extrating item list: "
+                                    + output.getError() + " - " + output.getMessage();
+                        log.error(MSG);
+                        throw new RuntimeException(MSG);
+                    } else {
+                        log.info("Found [" + output.getResponse().getItems().size() + "] item(s)");
                     }
                     return true;
                 })
@@ -165,11 +168,12 @@ public class ItemETLWorkerShopee implements ItemETLWorker {
                             .convert().with(MultiRxConverters.toObservable());
                 })
                 .filter(output -> {
-                    log.info("Item detail output: " + output);
                     if (output.getError() != null && output.getError().length() > 0) {
-                        log.error("Error while extracting item detail: " + output.getMessage());
-                        log.error(output);
-                        throw new RuntimeException("Error while extracting item detail: " + output.getMessage());
+                        final String MSG =
+                                "Error while extracting item detail: "
+                                    + output.getError() + " - " + output.getMessage();
+                        log.error(MSG);
+                        throw new RuntimeException(MSG);
                     }
                     return true;
                 });

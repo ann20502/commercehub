@@ -79,10 +79,10 @@ public class BQShopRepositoryShopee implements ShopRepositoryShopee {
                 log.info("Successfully save shop performance");
                 return true;
             } else {
-                log.error("Failed to save performance: " + job.getStatus().getError());
+                log.error("Failed to save shop performance: " + job.getStatus().getError());
             }
         } catch (InterruptedException e) {
-            log.error("Failed to save performance: " + e.getMessage());
+            log.error("Failed to save shop performance: " + e.getMessage());
         }
         return false;
     }

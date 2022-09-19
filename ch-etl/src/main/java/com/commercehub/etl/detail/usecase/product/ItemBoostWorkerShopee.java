@@ -57,11 +57,15 @@ public class ItemBoostWorkerShopee implements ItemBoostWorker {
         );
         return productService.getBoostedList(commonParam).toMulti()
                 .filter(output -> {
-                    log.info("Boosted list output: " + output);
                     if (output.getError() != null && output.getError().length() > 0) {
-                        log.error("Error while extracting boosted list: " + output.getMessage());
-                        log.error(output);
-                        throw new RuntimeException("Error while extracting boosted list: " + output.getMessage());
+                        final String MSG =
+                                "Error while extracting boosted list: "
+                                    + output.getError() + " - "
+                                    + output.getMessage();
+                        log.error(MSG);
+                        throw new RuntimeException(MSG);
+                    } else {
+                        log.info("Boosted list output: " + output);
                     }
                     return true;
                 });
@@ -107,11 +111,13 @@ public class ItemBoostWorkerShopee implements ItemBoostWorker {
         BoostItemInput input = new BoostItemInput(itemIds);
         return productService.boostItem(commonParam, input).toMulti()
                 .filter(output -> {
-                    log.info("Boost item output: " + output);
                     if (output.getError() != null && output.getError().length() > 0) {
-                        log.error("Error while boosting items: " + output.getMessage());
-                        log.error(output);
-                        throw new RuntimeException("Error while boosting items: " + output.getMessage());
+                        final String MSG =
+                                "Error while boosting item: "
+                                    + output.getError() + " - "
+                                    + output.getMessage();
+                        log.error(MSG);
+                        throw new RuntimeException(MSG);
                     }
                     return true;
                 });

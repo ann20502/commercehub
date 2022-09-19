@@ -67,7 +67,7 @@ public class FSBoostRepository implements BoostRepository {
 
             return true;
         } catch( InterruptedException | ExecutionException ex ) {
-            log.error("Failed to save success attempt: " + ex.getMessage() );
+            log.error("Failed to save boost success attempt: " + ex.getMessage() );
         }
 
         return false;

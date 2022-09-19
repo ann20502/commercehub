@@ -41,8 +41,12 @@ public class PerformanceETLWorkerShopee implements PerformanceETLWorker {
                 })
                 .map(output -> {
                     if ( output.getError() != null && !output.getError().isEmpty() ) {
-                        log.error("Error while extracting shopee account health: " + output.getError());
-                        throw new ETLRuntimeException("Error while extracting shopee account health: " + output.getError());
+                        final String msg =
+                                "Error while extracting shopee account health: "
+                                        + output.getError() + " - "
+                                        + output.getMessage();
+                        log.error(msg);
+                        throw new ETLRuntimeException(msg);
                     }
                     return output;
                 })

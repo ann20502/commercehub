@@ -32,7 +32,7 @@ public class FSTimedTaskRepository implements TimedTaskRepository {
             TimedTask task = transform(snapshot);
             if ( task != null ) { return List.of(task); }
         } catch( InterruptedException | ExecutionException ex ) {
-            log.error("Filed to retrieve timed task: " + ex.getMessage());
+            log.error("Failed to retrieve timed task: " + ex.getMessage());
         }
         return Collections.emptyList();
     }
