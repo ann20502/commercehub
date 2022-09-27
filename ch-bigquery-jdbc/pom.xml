@@ -17,6 +17,8 @@
             1. Download GoogleBigQueryJDBC42.jar from https://cloud.google.com/bigquery/docs/reference/odbc-jdbc-drivers
             2. Put the jar to a path of your preference
             3. Fill absolute path in <systemPath> tag
+
+            For long term, the jar shall be uploaded to public repo such as Maven Repo or others
         -->
         <dependency>
             <groupId>com.simba</groupId>

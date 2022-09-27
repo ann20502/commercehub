@@ -10,6 +10,7 @@
     <version>1.0.0-SNAPSHOT</version>
 
     <modules>
+        <module>ch-gcp-cloud-logging-parent</module>
         <module>ch-common</module>
         <module>ch-rest-client</module>
         <module>ch-resource-server</module>
