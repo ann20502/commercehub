@@ -34,6 +34,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
         BQItemShopee.StockShopee.class,
         FSTimedTask.class,
         BQPerformanceShopee.class,
+        BQPerformanceShopee.Data.class,
         Utils.BigDecimalAdapter.class,
         Utils.InstantAdapter.class,
         Result.class
