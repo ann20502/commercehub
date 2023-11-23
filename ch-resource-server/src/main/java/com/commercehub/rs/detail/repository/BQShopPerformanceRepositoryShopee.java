@@ -54,33 +54,21 @@ public class BQShopPerformanceRepositoryShopee implements ShopPerformanceReposit
                         FieldValue preparationTimeWrapper = valueList.get("fulfillment_preparation_time");
                         if ( !preparationTimeWrapper.isNull() ) {
                             FieldValueList preparationTime =  preparationTimeWrapper.getRecordValue();
-                            preparation = new ShopPerformance.Data(
-                                    preparationTime.get("target").getStringValue(),
-                                    preparationTime.get("performance").getStringValue(),
-                                    preparationTime.get("penalty_point").getStringValue()
-                            );
+                            preparation = extractData(preparationTime);
                         }
 
                         ShopPerformance.Data response = null;
                         FieldValue responseTimeWrapper = valueList.get("cservice_response_time");
                         if ( !responseTimeWrapper.isNull() ) {
                             FieldValueList responseTime = responseTimeWrapper.getRecordValue();
-                            response = new ShopPerformance.Data(
-                                    responseTime.get("target").getStringValue(),
-                                    responseTime.get("performance").getStringValue(),
-                                    responseTime.get("penalty_point").getStringValue()
-                            );
+                            response = extractData(responseTime);
                         }
 
                         ShopPerformance.Data rating = null;
                         FieldValue ratingOverallWrapper = valueList.get("csatisfaction_rating_overall");
                         if ( !ratingOverallWrapper.isNull() ) {
-                            FieldValueList ratingOVerall = ratingOverallWrapper.getRecordValue();
-                            rating = new ShopPerformance.Data(
-                                    ratingOVerall.get("target").getStringValue(),
-                                    ratingOVerall.get("performance").getStringValue(),
-                                    ratingOVerall.get("penalty_point").getStringValue()
-                            );
+                            FieldValueList ratingOverall = ratingOverallWrapper.getRecordValue();
+                            rating = extractData(ratingOverall);
                         }
 
                         return new ShopPerformanceBuilder()
@@ -97,6 +85,17 @@ public class BQShopPerformanceRepositoryShopee implements ShopPerformanceReposit
             log.error("Failed to retrieve shop performance: " + e.getMessage());
             throw new RuntimeException("Failed to retrieve shop performance: " + e.getMessage());
         }
+    }
+
+    private ShopPerformance.Data extractData(FieldValueList fieldValueList) {
+        FieldValue target = fieldValueList.get("target");
+        FieldValue performance = fieldValueList.get("performance");
+        FieldValue penaltyPoint = fieldValueList.get("penalty_point");
+        return new ShopPerformance.Data(
+                target.isNull() ? "" : target.getStringValue(),
+                performance.isNull() ? "" : performance.getStringValue(),
+                penaltyPoint.isNull() ? "" : penaltyPoint.getStringValue()
+        );
     }
 
 }
