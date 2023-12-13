@@ -60,8 +60,8 @@ public class ItemBoostWorkerShopee implements ItemBoostWorker {
                     if (output.getError() != null && output.getError().length() > 0) {
                         final String MSG =
                                 "Error while extracting boosted list: "
-                                    + output.getError() + " - "
-                                    + output.getMessage();
+                                        + output.getError() + " - "
+                                        + output.getMessage();
                         log.error(MSG);
                         throw new RuntimeException(MSG);
                     } else {
@@ -74,28 +74,36 @@ public class ItemBoostWorkerShopee implements ItemBoostWorker {
     /**
      * TODO: Optimization
      *
-     * @param boost Boost records
+     * @param boost  Boost records
      * @param output Current boosting list
      * @return return 5 items to be boosted
      */
     private List<String> getItemToBoost(Boost boost, GetBoostedListOutput output) {
         // Exempt current boosting list from configured list
-        Map<String,Integer> successAttempt = boost.successAttempt;
+        Map<String, Integer> successAttempt = boost.successAttempt;
         List<Long> boostingIds = output.getResponse().getItem_list().stream()
                 .map(GetBoostedListOutput.Item::getItem_id).collect(Collectors.toList());
 
-        Map<String, Long> summary = new HashMap<>();
-        for (Map.Entry<String,Integer> entries : successAttempt.entrySet()) {
-            Long itemId = Long.parseLong(entries.getKey());
+        // if currently boosting number >= 5, just attempt to boost 1 item
+        // as there is no way to tell how many slots the shop currently has
+        // otherwise, make it 5 since it is the default no of slot
+        final int NO_OF_SLOT_DEFAULT = 5;
+        int NO_OF_ITEM_TO_BOOST = boostingIds.size() >= NO_OF_SLOT_DEFAULT ? 1 : NO_OF_SLOT_DEFAULT - boostingIds.size();
+
+        Map<String, Integer> summary = new HashMap<>();
+        for (Map.Entry<String, Integer> entry : successAttempt.entrySet()) {
+            Long itemId = Long.parseLong(entry.getKey());
             if (!boostingIds.contains(itemId)) {
-                summary.put(entries.getKey(), itemId);
+                summary.put(entry.getKey(), entry.getValue());
             }
         }
 
-        LinkedHashMap<String, Long> linkedHashMap = summary.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue()).limit(5)
+        LinkedHashMap<String, Integer> linkedHashMap = summary.entrySet().stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue().thenComparing(Map.Entry.comparingByKey()))
+                .limit(NO_OF_ITEM_TO_BOOST)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
+        log.info("item to boost: " + linkedHashMap);
         return new ArrayList<>(linkedHashMap.keySet());
     }
 
@@ -114,8 +122,8 @@ public class ItemBoostWorkerShopee implements ItemBoostWorker {
                     if (output.getError() != null && output.getError().length() > 0) {
                         final String MSG =
                                 "Error while boosting item: "
-                                    + output.getError() + " - "
-                                    + output.getMessage();
+                                        + output.getError() + " - "
+                                        + output.getMessage();
                         log.error(MSG);
                         throw new RuntimeException(MSG);
                     }
@@ -125,7 +133,8 @@ public class ItemBoostWorkerShopee implements ItemBoostWorker {
 
     private boolean recordSuccessfulBoost(Linking linking, BoostItemOutput output) {
         List<Long> successIds = output.getResponse().getSuccess_list().getItem_id_list();
-        if ( output.getResponse().getSuccess_list().getItem_id_list().isEmpty() ) {
+        log.info("Newly boosted ids: " + successIds);
+        if (output.getResponse().getSuccess_list().getItem_id_list().isEmpty()) {
             return true;
         }
         return boostRepository.saveSuccessAttempt(linking.platform, linking.shopId, successIds);
